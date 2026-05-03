@@ -3,9 +3,7 @@ package entity
 /**
  * Represents a card in a deck of cards
  *
- * @constructor Creates a card with its suit and value
- * @param suit The [CardSuit] of the card.
- * @param value The [CardValue] of the card.
+ * @constructor Creates a card with its suit and value.
  * @property suit The [CardSuit] of the card.
  * @property value The [CardValue] of the card.
  */
@@ -14,6 +12,7 @@ class Card(val suit: CardSuit, val value: CardValue, var faceDown: Boolean = tru
     fun flip() {
         faceDown = false
     }
+
     override fun toString() = "$value of $suit"
 
     override fun equals(other: Any?): Boolean {
