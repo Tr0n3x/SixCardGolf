@@ -15,7 +15,7 @@ class Card(val suit: CardSuit, val value: CardValue, var faceDown: Boolean = tru
         faceDown = false
     }
 
-    override fun toString() = "$value of $suit"
+    override fun toString() = "${value.title} of ${suit.suitName}"
 
     /** Returns if two cards are the same. */
     override fun equals(other: Any?): Boolean {
@@ -27,7 +27,7 @@ class Card(val suit: CardSuit, val value: CardValue, var faceDown: Boolean = tru
 
     /** Returns the hashCode for a card. */
     override fun hashCode(): Int {
-        var result = suit.cardName.hashCode()
+        var result = suit.hashCode()
         result = 31 * result + value.hashCode()
         return result
     }
