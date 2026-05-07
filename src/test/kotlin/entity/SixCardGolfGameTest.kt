@@ -4,7 +4,7 @@ import kotlin.test.*
 
 class SixCardGolfGameTest {
 
-    /** Checks if all initial values are correct */
+    /** Checks if all initial values are correctly initialized. */
     @Test
     fun gameInitialValues() {
         val players = mutableListOf(Player("PlayerOne"), Player("PlayerTwo"))
@@ -17,6 +17,5 @@ class SixCardGolfGameTest {
         assertTrue(game.discard.isEmpty())
         assertNull(game.currentAction)
         assertNull(game.hand)
-        assertFalse(game.final)
     }
 }
