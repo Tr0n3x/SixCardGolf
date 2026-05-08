@@ -8,6 +8,6 @@ import entity.SixCardGolfGame
  */
 class RootService {
     val gameService = GameService(this)
-    val playerActionService = PlayerActionService(this)
+    //val playerActionService = PlayerActionService(this)
     var currentGame: SixCardGolfGame? = null
 }
