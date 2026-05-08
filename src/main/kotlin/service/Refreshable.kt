@@ -10,4 +10,34 @@ package service
  *
  * @see AbstractRefreshingService
  */
-interface Refreshable
+interface Refreshable {
+    /** Refreshes the GUI after the game started. */
+    fun refreshAfterGameStart()
+
+    /** Refreshes the GUI after the game ended. */
+    fun refreshAfterGameEnd()
+
+    /** Refreshes the GUI after a card has been flipped. */
+    fun refreshAfterFlipCard()
+
+    /** Refreshes the GUI after a card has been placed in your slots. */
+    fun refreshAfterPlaceCard()
+
+    /** Refreshes the GUI after a card has been placed in the hand slot. */
+    fun refreshAfterHandPlace()
+
+    /** Refreshes the GUI after a card has been taken from discard pile. */
+    fun refreshAfterDiscardTake()
+
+    /** Refreshes the GUI after a card has been placed on discard pile. */
+    fun refreshAfterDiscardPlace()
+
+    /** Refreshes the GUI after a card has been taken from deck. */
+    fun refreshAfterDeckTake()
+
+    /** Refreshes the GUI after a row of slots have been removed. */
+    fun refreshAfterRowRemove(slots: Array<Int>)
+
+    /** Refreshes the GUI after a players turn has ended. */
+    fun refreshAfterEndTurn()
+}
