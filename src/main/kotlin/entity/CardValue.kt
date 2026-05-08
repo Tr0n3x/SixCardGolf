@@ -31,7 +31,6 @@ enum class CardValue(val title: String, val value: Int) {
      * Provides utility functions for working with [CardValue].
      */
     companion object {
-
         /**
          * A set of values for a reduced set of 4x8=32 cards (starting with the 7)
          */

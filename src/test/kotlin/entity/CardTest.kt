@@ -2,6 +2,7 @@ package entity
 
 import kotlin.test.*
 
+/** Test class for the entity class Card*/
 class CardTest {
 
     private val aceOfSpades = Card(CardSuit.SPADES, CardValue.ACE, false)
@@ -23,7 +24,8 @@ class CardTest {
     }
 
     /**
-     * Check if equals does check for the same object, different object but same card, different cards and null
+     * Check if equals does check for the same object,
+     * different object but same card, different cards and null
      */
     @Test
     fun testEquals() {

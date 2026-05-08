@@ -2,6 +2,7 @@ package entity
 
 import kotlin.test.*
 
+/** Test class for the entity class Player */
 class PlayerTest {
 
     /** Checks if all initial values are working fine */

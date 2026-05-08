@@ -15,4 +15,3 @@ class Player(
     var lastAction: String = "",
     val slots: MutableList<Card?> = MutableList(6) { null }
 )
-
