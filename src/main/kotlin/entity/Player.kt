@@ -9,7 +9,7 @@ package entity
  * @property lastAction The log of the last action the player made.
  * @property slots The card slots of the player.
  */
-class Player(
+data class Player(
     val name: String,
     var score: Int = 0,
     var lastAction: String = "",

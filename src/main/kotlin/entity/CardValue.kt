@@ -12,19 +12,19 @@ import java.util.*
  * @property title The value of the card.
  */
 enum class CardValue(val title: String, val value: Int) {
-    TWO("Two",-2),
+    TWO("Two", -2),
     THREE("Three", 3),
-    FOUR("Four",4),
+    FOUR("Four", 4),
     FIVE("Five", 5),
     SIX("Six", 6),
     SEVEN("Seven", 7),
     EIGHT("Eight", 8),
-    NINE("Nine",9),
-    TEN("Ten",10),
-    JACK("Jack",10),
-    QUEEN("Queen",10),
-    KING("King",10),
-    ACE("Ace",1),
+    NINE("Nine", 9),
+    TEN("Ten", 10),
+    JACK("Jack", 10),
+    QUEEN("Queen", 10),
+    KING("King", 10),
+    ACE("Ace", 1),
     ;
 
     /**
@@ -32,11 +32,10 @@ enum class CardValue(val title: String, val value: Int) {
      */
     companion object {
         /**
-         * A set of values for a reduced set of 4x8=32 cards (starting with the 7)
+         * A set of values for a reduced set of 3*4*4=48 cards (+4 to get 52 cards)
          */
         fun shortDeck(): Set<CardValue> {
-            return EnumSet.of(ACE, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING)
+            return EnumSet.of(TWO, KING, QUEEN)
         }
-
     }
 }

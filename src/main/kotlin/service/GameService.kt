@@ -25,13 +25,13 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * @param testMode If true the deck, created by [createShortDeck] will be used.
      * @throws IllegalStateException If the number of players is not between 2 and 4.
      */
-    fun startGame(playerNames: List<String>, randomOrder: Boolean, testMode: Boolean ) {
+    fun startGame(playerNames: List<String>, randomOrder: Boolean, testMode: Boolean) {
         val playerList = playerNames.map { Player(it) }
         val game = SixCardGolfGame(playerList.toMutableList())
-        if(playerList.size !in 2..4) {
+        if (playerList.size !in 2..4) {
             throw IllegalStateException("2 to 4 players are required to start the game")
         }
-        if(testMode) {
+        if (testMode) {
             val deck = createShortDeck()
             game.deck = deck
         } else {
@@ -39,18 +39,20 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             game.deck = deck
         }
         game.deck.shuffle()
-        for(player in game.players) {
+        for (player in game.players) {
             for (i in player.slots.indices) {
                 player.slots[i] = game.deck.removeLast() // Potential removeFirst()
             }
         }
         game.discard.add(game.deck.removeLast())
         game.discard.last().flip()
-        if(randomOrder) {
-            game.players.shuffle()
+        if (randomOrder) {
+            val originalOrder = game.players.toList()
+            do {
+                game.players.shuffle()
+            } while (game.players == originalOrder)
         }
         game.currentPlayer = 0
-
         rootService.currentGame = game
     }
 
@@ -65,7 +67,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * Creates a full deck of cards containing all combinations of [CardSuit] and [CardValue].
      * @return A list representing the complete deck of cards.
      */
-    fun createDeck(): MutableList<Card> {
+    private fun createDeck(): MutableList<Card> {
         val deck = mutableListOf<Card>()
         for (suit in CardSuit.entries) {
             for (value in CardValue.entries) {
@@ -74,17 +76,25 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
         return deck
     }
+
     /**
-     * TODO Has to be reworked for correct functionality!
-     * Creates a short deck of cards containing all combinations of [CardSuit] and [CardValue].
+     * Creates a short deck of cards containing all combinations of [CardSuit] and [CardValue] in a short deck.
+     * 3 different card values * 4 different card suits * 4 times executed = 48 cards.
+     * Plus 4 extra cards to get a full set of 52 cards.
      * @return A list representing the short deck of cards.
      */
-    fun createShortDeck(): MutableList<Card> {
+    private fun createShortDeck(): MutableList<Card> {
         val deck = mutableListOf<Card>()
-        for (suit in CardSuit.entries) {
-            for (value in CardValue.shortDeck())
-                deck.add(Card(suit, value, true))
+        repeat(4) {
+            for (suit in CardSuit.entries) {
+                for (value in CardValue.shortDeck())
+                    deck.add(Card(suit, value, true))
+            }
         }
+        deck.add(Card(CardSuit.CLUBS, CardValue.TWO, true))
+        deck.add(Card(CardSuit.DIAMONDS, CardValue.TWO, true))
+        deck.add(Card(CardSuit.HEARTS, CardValue.TWO, true))
+        deck.add(Card(CardSuit.SPADES, CardValue.TWO, true))
         return deck
     }
 }

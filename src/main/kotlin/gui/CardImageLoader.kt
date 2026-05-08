@@ -60,7 +60,6 @@ class CardImageLoader {
  * As the [CARDS_FILE] does not have the same ordering of suits
  * as they are in [CardSuit], this extension property provides
  * a corresponding mapping to be used when addressing the row.
- *
  */
 private val CardSuit.row get() = when (this) {
     CardSuit.CLUBS -> 0
@@ -68,7 +67,6 @@ private val CardSuit.row get() = when (this) {
     CardSuit.HEARTS -> 2
     CardSuit.SPADES -> 3
 }
-
 
 /**
  * As the [CARDS_FILE] does not have the same ordering of values

@@ -6,7 +6,7 @@ package entity
  *
  * @property suitName The name of the suit.
  */
-enum class CardSuit (val suitName: String) {
+enum class CardSuit(val suitName: String) {
     CLUBS("Clubs ♣"),
     SPADES("Spades ♠"),
     HEARTS("Hearts ♥"),

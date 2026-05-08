@@ -14,6 +14,7 @@ class Card(val suit: CardSuit, val value: CardValue, var faceDown: Boolean = tru
     fun flip() {
         faceDown = false
     }
+
     /** Gives the card as a string. */
     override fun toString() = "${value.title} of ${suit.suitName}"
 
