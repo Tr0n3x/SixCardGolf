@@ -1,5 +1,6 @@
 package service
 
+import entity.Action
 import entity.Player
 
 /**
@@ -11,6 +12,8 @@ import entity.Player
 class PlayerActionService(private val rootService: RootService) : AbstractRefreshingService() {
     /** The current game instance. */
     private val game get() = requireNotNull(rootService.currentGame) { "Game not found" }
+
+    private var flippedThisTurn = 0
 
     /** Initiates the last round if all requirements are met. */
     private fun finishMove() {
@@ -25,6 +28,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if (game.finalPlays == 0) {
             endGame()
         } else {
+            game.players[game.currentPlayer].lastAction = ""
             rootService.gameService.nextPlayer()
         }
     }
@@ -45,6 +49,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             removeRow(player,0)
             removeRow(player,1)
             calculateScore(player)
+            val ranking = game.players.sortedByDescending { it.score }
         }
     }
 
@@ -116,12 +121,108 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         return player.score
     }
 
-    /** Returns if all cards are face up */
+    /** Returns if all cards are face up. */
     private fun allCardsOpen(player: Player): Boolean {
         return player.slots.all { it?.faceDown == false }
     }
 
-    //fun flipCard(slot?: Int) {}
-    fun drawCard(discard: Boolean) {}
-    //fun placeCard(slot?: Int) {}
+    /**
+     * Flips a card from the card slots
+     *
+     * @param slot The slot in which the card will be flipped
+     * @throws IllegalStateException If this action is not allowed at this time.
+     * @throws IllegalStateException If the player tried to skip on first flip.
+     */
+    fun flipCard(slot: Int?) {
+        if (game.currentAction == Action.DRAW_DECK || game.currentAction == Action.DRAW_DISCARD) {
+            throw IllegalStateException("This move is not allowed.")
+        }
+        val player = game.players[game.currentPlayer]
+        if (flippedThisTurn == 0 && slot == null) {
+            throw IllegalStateException("You are not allowed to skip on first flip.")
+        }
+        if(slot != null) {
+            player.slots[slot]?.flip()
+            val card = player.slots[slot]
+            player.lastAction += "Flipped $card in slot $slot. "
+        }
+        game.currentAction = Action.FLIP
+        flippedThisTurn++
+        removeRow(player,0)
+        removeRow(player,1)
+        if (flippedThisTurn >= 2) {
+            finishMove()
+            flippedThisTurn = 0
+        }
+    }
+
+    /**
+     * Draws a card from the deck or the discard pile and places it in game.hand.
+     *
+     * @param discard true if drawn from discard, false if drawn from deck.
+     * @throws IllegalStateException If a certain action is not allowed.
+     */
+    fun drawCard(discard: Boolean) {
+        if (game.currentAction != null) {
+            throw IllegalStateException("This move is not allowed.")
+        }
+        val player = game.players[game.currentPlayer]
+        if(discard) {
+            if(game.discard.isNotEmpty()) {
+                game.hand = game.discard.removeLast()
+                game.hand?.flip()
+                game.currentAction = Action.DRAW_DISCARD
+                player.lastAction += "Drew ${game.hand} from discard. "
+            }
+        } else {
+            if(game.deck.isNotEmpty()) {
+                game.hand = game.deck.removeLast()
+                game.hand?.flip()
+                game.currentAction = Action.DRAW_DECK
+                player.lastAction += "Drew ${game.hand} from deck. "
+            }
+        }
+    }
+
+    /**
+     * Places the drawn card from game.hand.
+     *
+     * If [slot] is null, the card in game.hand is discarded.
+     * Otherwise, the card in the given slot (0–5) is replaced with the card from game.hand.
+     * The previous card in the slot is turned face up if necessary and moved to the discard pile.
+     *
+     * @param slot null to discard the drawn card, or the slot index (0–5) to replace.
+     * @throws IllegalStateException If a certain action is not allowed.
+     */
+    fun placeCard(slot: Int?) {
+        if (game.currentAction != Action.DRAW_DECK &&
+            game.currentAction != Action.DRAW_DISCARD) {
+            throw IllegalStateException("This move is not allowed.")
+        }
+        val player = game.players[game.currentPlayer]
+        if (slot == null) {
+            if (game.currentAction != Action.DRAW_DECK) {
+                throw IllegalStateException("This move is not allowed.")
+            }
+            val card = game.hand
+            game.hand?.let { game.discard.add(it) }
+            game.hand = null
+            player.lastAction += "Discarded drawn card $card. "
+            game.currentAction = Action.FLIP
+            flippedThisTurn = 1
+            return
+        }
+        val oldCard = player.slots[slot]
+        player.slots[slot]?.let {
+            if (it.faceDown) it.flip()
+            game.discard.add(it)
+        }
+        val newCard = game.hand
+        game.hand?.let { player.slots[slot] = it }
+        game.hand = null
+        player.lastAction += "Replaced $oldCard with $newCard in slot $slot. "
+        removeRow(player, 0)
+        removeRow(player, 1)
+        finishMove()
+    }
 }
