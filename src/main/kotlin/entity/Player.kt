@@ -14,4 +14,7 @@ data class Player(
     var score: Int = 0,
     var lastAction: String = "",
     val slots: MutableList<Card?> = MutableList(6) { null }
+    // Slots:
+    //[0][2][4]
+    //[1][3][5]
 )

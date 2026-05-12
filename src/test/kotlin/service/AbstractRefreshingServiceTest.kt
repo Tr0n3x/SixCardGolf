@@ -1,8 +1,8 @@
 package service
 
-import org.junit.jupiter.api.Assertions.assertTrue
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 /**
  * This class tests the functionality of the [AbstractRefreshingService] class.

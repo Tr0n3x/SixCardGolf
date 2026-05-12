@@ -20,4 +20,5 @@ class SixCardGolfGame(
     var discard: MutableList<Card> = mutableListOf(),
     var currentAction: Action? = null,
     var hand: Card? = null,
+    var finalRound: Boolean = false,
 )

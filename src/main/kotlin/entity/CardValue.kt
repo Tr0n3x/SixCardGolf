@@ -9,7 +9,8 @@ import java.util.*
  * While some values are different:
  * TWO equals -2, JACK,QUEEN,KING equal 10 and ACE equals 1.
  *
- * @property title The value of the card.
+ * @property title The name of the card.
+ * @property value The value of the card.
  */
 enum class CardValue(val title: String, val value: Int) {
     TWO("Two", -2),
