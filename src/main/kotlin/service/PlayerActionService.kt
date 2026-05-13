@@ -47,8 +47,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                     card.flip()
                 }
             }
-            removeRow(player,0)
-            removeRow(player,1)
+            removeRow(player, 0)
+            removeRow(player, 1)
             calculateScore(player)
         }
         onAllRefreshables { refreshAfterGameEnd() }
@@ -151,19 +151,24 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if (flippedThisTurn == 0 && slot == null) {
             throw IllegalStateException("You are not allowed to skip on first flip.")
         }
-        if(slot != null) {
-            player.slots[slot]?.flip()
+        if (slot != null) {
+            val card = player.slots[slot] ?: return
+
+            card.flip()
             onAllRefreshables { refreshAfterFlipCard() }
-            val card = player.slots[slot]
+
             player.lastAction += "Flipped $card in slot $slot. "
-        }
-        game.currentAction = Action.FLIP
-        flippedThisTurn++
-        removeRow(player,0)
-        removeRow(player,1)
-        if (flippedThisTurn >= 2) {
-            finishMove()
-            flippedThisTurn = 0
+
+            game.currentAction = Action.FLIP
+            flippedThisTurn++
+
+            removeRow(player, 0)
+            removeRow(player, 1)
+
+            if (flippedThisTurn >= 2 || allCardsOpen(player)) {
+                finishMove()
+                flippedThisTurn = 0
+            }
         }
     }
 
@@ -178,18 +183,17 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             throw IllegalStateException("This move is not allowed.")
         }
         val player = game.players[game.currentPlayer]
-        if(discard) {
-            if(game.discard.isNotEmpty()) {
+        if (discard) {
+            if (game.discard.isNotEmpty()) {
                 val card = game.discard.removeLast()
                 onAllRefreshables { refreshAfterDiscardTake() }
                 game.hand = card
-                game.hand?.flip()
                 onAllRefreshables { refreshAfterHandPlace() }
                 game.currentAction = Action.DRAW_DISCARD
                 player.lastAction += "Drew ${game.hand} from discard. "
             }
         } else {
-            if(game.deck.isNotEmpty()) {
+            if (game.deck.isNotEmpty()) {
                 val card = game.deck.removeLast()
                 onAllRefreshables { refreshAfterDeckTake() }
                 game.hand = card
@@ -213,7 +217,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      */
     fun placeCard(slot: Int?) {
         if (game.currentAction != Action.DRAW_DECK &&
-            game.currentAction != Action.DRAW_DISCARD) {
+            game.currentAction != Action.DRAW_DISCARD
+        ) {
             throw IllegalStateException("This move is not allowed.")
         }
         val player = game.players[game.currentPlayer]
