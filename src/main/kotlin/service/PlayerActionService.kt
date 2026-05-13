@@ -63,30 +63,18 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalArgumentException If [row] is not 0 or 1.
      */
     private fun removeRow(player: Player, row: Int) {
-        val card0 = player.slots[0]
-        val card1 = player.slots[1]
-        val card2 = player.slots[2]
-        val card3 = player.slots[3]
-        val card4 = player.slots[4]
-        val card5 = player.slots[5]
+        val cardsRow0 = listOf(player.slots[0], player.slots[2], player.slots[4])
+        val cardsRow1 = listOf(player.slots[1], player.slots[3], player.slots[5])
 
-        val cardsRow0 = listOf(card0, card2, card4)
-        val cardsRow1 = listOf(card1, card3, card5)
+        val cards = if (row == 0) cardsRow0 else cardsRow1
+        val indices = if (row == 0) intArrayOf(0, 2, 4) else intArrayOf(1, 3, 5)
 
         if (row != 0 && row != 1) {
             throw IllegalArgumentException("Row has to be 0 or 1.")
         }
-        if (row == 0 && allCardsNotNull(cardsRow0) && allCardsFlipped(cardsRow0) && sameValueCards(cardsRow0)) {
-            player.slots[0] = null
-            player.slots[2] = null
-            player.slots[4] = null
-            onAllRefreshables { refreshAfterRowRemove(intArrayOf(0,2,4)) }
-        }
-        if (row == 1 && allCardsNotNull(cardsRow1) && allCardsFlipped(cardsRow1) && sameValueCards(cardsRow1)) {
-            player.slots[1] = null
-            player.slots[3] = null
-            player.slots[5] = null
-            onAllRefreshables { refreshAfterRowRemove(intArrayOf(1,3,5)) }
+        if (allCardsNotNull(cards) && allCardsFlipped(cards) && sameValueCards(cards)) {
+            indices.forEach { player.slots[it] = null }
+            onAllRefreshables { refreshAfterRowRemove(indices) }
         }
     }
 
