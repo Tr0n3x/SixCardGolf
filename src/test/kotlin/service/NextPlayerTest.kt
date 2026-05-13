@@ -18,6 +18,7 @@ class NextPlayerTest {
             randomOrder = false,
             testMode = false
         )
+        refreshableTest.reset()
     }
     /** Tests if the [GameService.nextPlayer] method is working correctly. */
     @Test

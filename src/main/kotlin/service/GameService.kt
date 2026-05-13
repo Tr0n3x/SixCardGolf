@@ -54,6 +54,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
         game.currentPlayer = 0
         rootService.currentGame = game
+        onAllRefreshables { refreshAfterGameStart() }
     }
 
     /** Starts the turn of the next Player */
@@ -61,6 +62,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         val game = rootService.currentGame
             ?: throw IllegalStateException("Game not started")
         game.currentPlayer = (game.currentPlayer + 1) % game.players.size
+        onAllRefreshables { refreshAfterEndTurn() }
     }
 
     /**

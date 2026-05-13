@@ -1,7 +1,6 @@
 package gui
 
 import service.Refreshable
-import service.RootService
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.BoardGameScene
 import tools.aqua.bgw.util.Font
@@ -32,45 +31,4 @@ class HelloScene : BoardGameScene(), Refreshable {
         background = ColorVisual(108, 168, 59)
         addComponents(helloLabel)
     }
-
-    override fun refreshAfterDeckTake() {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshAfterDiscardPlace() {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshAfterDiscardTake() {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshAfterEndTurn() {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshAfterFlipCard() {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshAfterGameEnd() {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshAfterGameStart() {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshAfterHandPlace() {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshAfterPlaceCard() {
-        TODO("Not yet implemented")
-    }
-
-    override fun refreshAfterRowRemove(slots: Array<Int>) {
-        TODO("Not yet implemented")
-    }
-
 }

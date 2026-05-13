@@ -13,6 +13,7 @@ class StartGameTest {
         rootService = RootService()
         refreshableTest = RefreshableTest(rootService)
         rootService.gameService.addRefreshable(refreshableTest)
+        refreshableTest.reset()
     }
 
     /** Tests if the game setup with a normal deck is working correctly. */

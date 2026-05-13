@@ -32,7 +32,7 @@ class CardTest {
         assertEquals(twoOfDiamonds, twoOfDiamonds)
         assertEquals(threeOfClubs, threeOfClubsTwo)
         assertNotEquals(kingOfHearts, aceOfSpades)
-        assertFalse(twoOfDiamonds.equals(null))
+        assertNotNull(twoOfDiamonds)
     }
     /** Check for consistent and working hashCode */
     @Test

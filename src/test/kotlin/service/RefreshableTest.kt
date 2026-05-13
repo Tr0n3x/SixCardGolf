@@ -1,5 +1,14 @@
 package service
 
+/**
+ * Test class for [Refreshable].
+ *
+ * This class is used in unit tests to verify that the correct refresh
+ * methods are triggered by service methods.
+ * The refreshes set a boolean flag that can be checked in tests.
+ *
+ * @property rootService The [RootService] used to register this refreshable
+ */
 class RefreshableTest(val rootService: RootService): Refreshable {
     var refreshAfterGameStart: Boolean = false
         private set
@@ -31,6 +40,7 @@ class RefreshableTest(val rootService: RootService): Refreshable {
     var refreshAfterEndTurn: Boolean = false
         private set
 
+    /** Resets all flags to false. */
     fun reset() {
         refreshAfterGameStart = false
         refreshAfterGameEnd = false
@@ -76,8 +86,8 @@ class RefreshableTest(val rootService: RootService): Refreshable {
         refreshAfterDeckTake = true
     }
 
-    override fun refreshAfterRowRemove(slots: Array<Int>) {
-        refreshAfterRowRemove(slots)
+    override fun refreshAfterRowRemove(slots: IntArray) {
+        refreshAfterRowRemove = true
     }
 
     override fun refreshAfterEndTurn() {

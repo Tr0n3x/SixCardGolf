@@ -1,6 +1,7 @@
 package service
 
 import entity.Action
+import entity.Card
 import entity.Player
 
 /**
@@ -22,7 +23,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 game.finalRound = true
                 game.finalPlays = game.players.size - 1
             } else {
-                game.finalPlays = game.finalPlays?.minus(game.finalPlays!!)
+                game.finalPlays = game.finalPlays?.minus(1)
             }
         }
         if (game.finalPlays == 0) {
@@ -49,8 +50,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             removeRow(player,0)
             removeRow(player,1)
             calculateScore(player)
-            val ranking = game.players.sortedByDescending { it.score }
         }
+        onAllRefreshables { refreshAfterGameEnd() }
     }
 
     /**
@@ -69,28 +70,49 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val card4 = player.slots[4]
         val card5 = player.slots[5]
 
+        val cardsRow0 = listOf(card0, card2, card4)
+        val cardsRow1 = listOf(card1, card3, card5)
+
         if (row != 0 && row != 1) {
             throw IllegalArgumentException("Row has to be 0 or 1.")
         }
-        if (row == 0
-            && card0 != null && card2 != null && card4 != null
-            && !card0.faceDown && !card2.faceDown && !card4.faceDown
-            && card0.value.title == card2.value.title && card0.value.title == card4.value.title
-        ) {
+        if (row == 0 && allCardsNotNull(cardsRow0) && allCardsFlipped(cardsRow0) && sameValueCards(cardsRow0)) {
             player.slots[0] = null
             player.slots[2] = null
             player.slots[4] = null
+            onAllRefreshables { refreshAfterRowRemove(intArrayOf(0,2,4)) }
         }
-        if (row == 1
-            && card1 != null && card3 != null && card5 != null
-            && !card1.faceDown && !card3.faceDown && !card5.faceDown
-            && card1.value.title == card3.value.title && card1.value.title == card5.value.title
-        ) {
+        if (row == 1 && allCardsNotNull(cardsRow1) && allCardsFlipped(cardsRow1) && sameValueCards(cardsRow1)) {
             player.slots[1] = null
             player.slots[3] = null
             player.slots[5] = null
+            onAllRefreshables { refreshAfterRowRemove(intArrayOf(1,3,5)) }
         }
     }
+
+    /**
+     * Checks whether a list of cards has the same value title.
+     *
+     * @return true if all cards have the same value title, otherwise false.
+     */
+    private fun sameValueCards(cards: List<Card?>): Boolean =
+        cards.filterNotNull().map { it.value.title }.distinct().size == 1
+
+    /**
+     * Checks whether a list of cards is flipped.
+     *
+     * @return true if all cards are flipped, otherwise false.
+     */
+    private fun allCardsFlipped(cards: List<Card?>): Boolean =
+        cards.filterNotNull().all { !it.faceDown }
+
+    /**
+     * Checks whether a list of cards is not null.
+     *
+     * @return true if all cards are not null, otherwise false.
+     */
+    private fun allCardsNotNull(cards: List<Card?>): Boolean =
+        cards.all { it != null }
 
     /**
      * Checks whether two specific slots have the same value title.
@@ -143,6 +165,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
         if(slot != null) {
             player.slots[slot]?.flip()
+            onAllRefreshables { refreshAfterFlipCard() }
             val card = player.slots[slot]
             player.lastAction += "Flipped $card in slot $slot. "
         }
@@ -169,15 +192,21 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val player = game.players[game.currentPlayer]
         if(discard) {
             if(game.discard.isNotEmpty()) {
-                game.hand = game.discard.removeLast()
+                val card = game.discard.removeLast()
+                onAllRefreshables { refreshAfterDiscardTake() }
+                game.hand = card
                 game.hand?.flip()
+                onAllRefreshables { refreshAfterHandPlace() }
                 game.currentAction = Action.DRAW_DISCARD
                 player.lastAction += "Drew ${game.hand} from discard. "
             }
         } else {
             if(game.deck.isNotEmpty()) {
-                game.hand = game.deck.removeLast()
+                val card = game.deck.removeLast()
+                onAllRefreshables { refreshAfterDeckTake() }
+                game.hand = card
                 game.hand?.flip()
+                onAllRefreshables { refreshAfterHandPlace() }
                 game.currentAction = Action.DRAW_DECK
                 player.lastAction += "Drew ${game.hand} from deck. "
             }
@@ -206,7 +235,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             }
             val card = game.hand
             game.hand?.let { game.discard.add(it) }
+            onAllRefreshables { refreshAfterDiscardPlace() }
             game.hand = null
+            onAllRefreshables { refreshAfterHandPlace() }
             player.lastAction += "Discarded drawn card $card. "
             game.currentAction = Action.FLIP
             flippedThisTurn = 1
@@ -216,10 +247,15 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         player.slots[slot]?.let {
             if (it.faceDown) it.flip()
             game.discard.add(it)
+            onAllRefreshables { refreshAfterDiscardPlace() }
         }
         val newCard = game.hand
-        game.hand?.let { player.slots[slot] = it }
+        game.hand?.let {
+            player.slots[slot] = it
+            onAllRefreshables { refreshAfterPlaceCard() }
+        }
         game.hand = null
+        onAllRefreshables { refreshAfterHandPlace() }
         player.lastAction += "Replaced $oldCard with $newCard in slot $slot. "
         removeRow(player, 0)
         removeRow(player, 1)

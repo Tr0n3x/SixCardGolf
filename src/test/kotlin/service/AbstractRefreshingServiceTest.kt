@@ -24,47 +24,7 @@ class AbstractRefreshingServiceTest {
      */
     @BeforeTest
     fun setUp() {
-        testRefreshable = object : Refreshable {
-            override fun refreshAfterGameStart() {
-                TODO("Not yet implemented")
-            }
-
-            override fun refreshAfterGameEnd() {
-                TODO("Not yet implemented")
-            }
-
-            override fun refreshAfterFlipCard() {
-                TODO("Not yet implemented")
-            }
-
-            override fun refreshAfterPlaceCard() {
-                TODO("Not yet implemented")
-            }
-
-            override fun refreshAfterHandPlace() {
-                TODO("Not yet implemented")
-            }
-
-            override fun refreshAfterDiscardTake() {
-                TODO("Not yet implemented")
-            }
-
-            override fun refreshAfterDiscardPlace() {
-                TODO("Not yet implemented")
-            }
-
-            override fun refreshAfterDeckTake() {
-                TODO("Not yet implemented")
-            }
-
-            override fun refreshAfterRowRemove(slots: Array<Int>) {
-                TODO("Not yet implemented")
-            }
-
-            override fun refreshAfterEndTurn() {
-                TODO("Not yet implemented")
-            }
-        }
+        testRefreshable = object : Refreshable {}
         abstractRefreshingService = object : AbstractRefreshingService() {}
         abstractRefreshingService.addRefreshable(testRefreshable)
     }

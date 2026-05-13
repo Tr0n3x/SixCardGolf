@@ -25,6 +25,4 @@ class SopraApplication : BoardGameApplication("SoPra Game") {
     init {
         this.showGameScene(helloScene)
     }
-
 }
-
