@@ -3,6 +3,7 @@ package service
 import entity.Action
 import kotlin.test.*
 
+/** Test class for [PlayerActionService.drawCard]. */
 class DrawCardTest {
     private lateinit var rootService: RootService
     private lateinit var refreshableTest: RefreshableTest
@@ -58,5 +59,4 @@ class DrawCardTest {
         assertTrue(refreshableTest.refreshAfterDeckTake)
         assertTrue(refreshableTest.refreshAfterHandPlace)
     }
-
 }

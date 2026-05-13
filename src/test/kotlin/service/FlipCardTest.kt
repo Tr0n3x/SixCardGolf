@@ -4,13 +4,9 @@ import entity.Action
 import entity.Card
 import entity.CardSuit
 import entity.CardValue
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
+/** Test class for [PlayerActionService.flipCard]. */
 class FlipCardTest {
     private lateinit var rootService: RootService
     private lateinit var refreshableTest: RefreshableTest
@@ -23,7 +19,7 @@ class FlipCardTest {
         rootService.playerActionService.addRefreshable(refreshableTest)
         rootService.gameService.addRefreshable(refreshableTest)
         rootService.gameService.startGame(
-            listOf("PlayerOne", "PlayerTwo","PlayerThree", "PlayerFour"),
+            listOf("PlayerOne", "PlayerTwo", "PlayerThree", "PlayerFour"),
             randomOrder = false,
             testMode = false
         )
@@ -57,10 +53,10 @@ class FlipCardTest {
         val game = requireNotNull(rootService.currentGame)
         game.currentAction = Action.FLIP
 
-        assertTrue { game.players[game.currentPlayer].slots[0]?.faceDown == true}
+        assertTrue { game.players[game.currentPlayer].slots[0]?.faceDown == true }
         rootService.playerActionService.flipCard(0)
-        assertTrue { game.players[game.currentPlayer].slots[0]?.faceDown == false}
-        assertTrue { refreshableTest.refreshAfterFlipCard}
+        assertTrue { game.players[game.currentPlayer].slots[0]?.faceDown == false }
+        assertTrue { refreshableTest.refreshAfterFlipCard }
     }
 
     /** Tests if finishMove happens after the second flip action. */
@@ -82,9 +78,9 @@ class FlipCardTest {
         val player = game.players[game.currentPlayer]
         game.currentAction = Action.FLIP
 
-        player.slots[0] = Card(CardSuit.HEARTS, CardValue.TWO,true)
-        player.slots[2] = Card(CardSuit.DIAMONDS, CardValue.TWO,false)
-        player.slots[4] = Card(CardSuit.SPADES, CardValue.TWO,false)
+        player.slots[0] = Card(CardSuit.HEARTS, CardValue.TWO, true)
+        player.slots[2] = Card(CardSuit.DIAMONDS, CardValue.TWO, false)
+        player.slots[4] = Card(CardSuit.SPADES, CardValue.TWO, false)
 
         rootService.playerActionService.flipCard(0)
 
@@ -101,12 +97,12 @@ class FlipCardTest {
         val player = game.players[game.currentPlayer]
         game.currentAction = Action.FLIP
 
-        player.slots[0] = Card(CardSuit.HEARTS, CardValue.TWO,true)
-        player.slots[1] = Card(CardSuit.DIAMONDS, CardValue.ACE,false)
-        player.slots[2] = Card(CardSuit.SPADES, CardValue.THREE,false)
-        player.slots[3] = Card(CardSuit.DIAMONDS, CardValue.THREE,false)
-        player.slots[4] = Card(CardSuit.SPADES, CardValue.KING,false)
-        player.slots[5] = Card(CardSuit.SPADES, CardValue.QUEEN,false)
+        player.slots[0] = Card(CardSuit.HEARTS, CardValue.TWO, true)
+        player.slots[1] = Card(CardSuit.DIAMONDS, CardValue.ACE, false)
+        player.slots[2] = Card(CardSuit.SPADES, CardValue.THREE, false)
+        player.slots[3] = Card(CardSuit.DIAMONDS, CardValue.THREE, false)
+        player.slots[4] = Card(CardSuit.SPADES, CardValue.KING, false)
+        player.slots[5] = Card(CardSuit.SPADES, CardValue.QUEEN, false)
         rootService.playerActionService.flipCard(0)
 
         assertTrue(game.finalRound)

@@ -1,8 +1,6 @@
 package service
 
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 /**
  * This class tests the functionality of the [AbstractRefreshingService] class.

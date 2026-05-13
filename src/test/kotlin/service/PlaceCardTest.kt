@@ -3,6 +3,7 @@ package service
 import entity.Action
 import kotlin.test.*
 
+/** Test class for [PlayerActionService.placeCard]. */
 class PlaceCardTest {
     private lateinit var rootService: RootService
     private lateinit var refreshableTest: RefreshableTest
@@ -20,7 +21,6 @@ class PlaceCardTest {
         )
         refreshableTest.reset()
     }
-
 
     /** Tests if placeCard will be stopped when the game logic does not allow this action. */
     @Test
