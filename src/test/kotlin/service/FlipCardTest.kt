@@ -30,6 +30,7 @@ class FlipCardTest {
     @Test
     fun testWrongAction() {
         val game = requireNotNull(rootService.currentGame)
+        game.round = 1
         game.currentAction = Action.DRAW_DECK
 
         assertFailsWith<IllegalStateException> {
@@ -41,6 +42,8 @@ class FlipCardTest {
     @Test
     fun testSkipOnFirstFlip() {
         val game = requireNotNull(rootService.currentGame)
+        game.round = 1
+
         game.currentAction = Action.FLIP
         assertFailsWith<IllegalStateException> {
             rootService.playerActionService.flipCard(null)
@@ -51,6 +54,8 @@ class FlipCardTest {
     @Test
     fun testFlipCard() {
         val game = requireNotNull(rootService.currentGame)
+        game.round = 1
+
         game.currentAction = Action.FLIP
 
         assertTrue { game.players[game.currentPlayer].slots[0]?.faceDown == true }
@@ -63,6 +68,8 @@ class FlipCardTest {
     @Test
     fun testFinishMoveAfterTwoFlips() {
         val game = requireNotNull(rootService.currentGame)
+        game.round = 1
+
         game.currentAction = Action.FLIP
 
         rootService.playerActionService.flipCard(0)
@@ -75,6 +82,8 @@ class FlipCardTest {
     @Test
     fun testRemoveRowAfterFlip() {
         val game = requireNotNull(rootService.currentGame)
+        game.round = 1
+
         val player = game.players[game.currentPlayer]
         game.currentAction = Action.FLIP
 
@@ -94,6 +103,8 @@ class FlipCardTest {
     @Test
     fun testFinalRoundAfterFlip() {
         val game = requireNotNull(rootService.currentGame)
+        game.round = 1
+
         val player = game.players[game.currentPlayer]
         game.currentAction = Action.FLIP
 
@@ -114,6 +125,8 @@ class FlipCardTest {
     @Test
     fun testEndGameAfterFlip() {
         val game = requireNotNull(rootService.currentGame)
+        game.round = 1
+
         val player = game.players[game.currentPlayer]
 
         game.currentAction = Action.FLIP
@@ -130,5 +143,31 @@ class FlipCardTest {
         rootService.playerActionService.flipCard(0)
 
         assertTrue(refreshableTest.refreshAfterGameEnd)
+    }
+
+    /** Tests if the flip works in initial starting round. */
+    @Test
+    fun testInitialFlip() {
+        val game = requireNotNull(rootService.currentGame)
+        game.round = 0
+        val card = game.players[0].slots[0]!!
+
+        assertTrue(card.faceDown)
+        rootService.playerActionService.flipCard(0)
+        assertFalse(card.faceDown)
+    }
+
+    /** Tests if the player changes after two flips in starting round. */
+    @Test
+    fun testInitialFlipPlayerChange() {
+        val game = requireNotNull(rootService.currentGame)
+        game.round = 0
+
+        assertEquals(0,game.currentPlayer)
+
+        rootService.playerActionService.flipCard(0)
+        rootService.playerActionService.flipCard(1)
+
+        assertEquals(1, game.currentPlayer)
     }
 }

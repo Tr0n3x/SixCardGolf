@@ -41,7 +41,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * calculates and shows scoreboard
      */
     private fun endGame() {
-        for (player in game.players) {
+        for (i in game.players.indices) {
+            game.currentPlayer = i
+            val player = game.players[i]
             for (card in player.slots) {
                 if (card != null && card.faceDown) {
                     card.flip()
@@ -49,8 +51,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             }
             removeRow(player, 0)
             removeRow(player, 1)
-            calculateScore(player)
         }
+        calculateScore()
         onAllRefreshables { refreshAfterGameEnd() }
     }
 
@@ -116,19 +118,19 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
     /** Calculates the score of the given player.
      *
-     * @param player The player whose score will be calculated.
      * @return The score of the player.
      */
-    private fun calculateScore(player: Player): Int {
-        var i = 0
-        while (i < player.slots.size) {
-            if (!boolSlotsEqual(player, i, i + 1)) {
-                player.score += player.slots[i]?.value?.value ?: 0
-                player.score += player.slots[i + 1]?.value?.value ?: 0
+    private fun calculateScore() {
+        for (player in game.players) {
+            var i = 0
+            while (i < player.slots.size) {
+                if (!boolSlotsEqual(player, i, i + 1)) {
+                    player.score = player.score?.plus(player.slots[i]?.value?.value ?: 0)
+                    player.score = player.score?.plus(player.slots[i + 1]?.value?.value ?: 0)
+                }
+                i += 2
             }
-            i += 2
         }
-        return player.score
     }
 
     /** Returns if all cards are face up. */
@@ -144,10 +146,35 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalStateException If the player tried to skip on first flip.
      */
     fun flipCard(slot: Int?) {
+        val player = game.players[game.currentPlayer]
+        // Initial flips on game start
+        if(game.round == 0) {
+            if (slot == null) {
+                throw IllegalStateException("You must flip a card.")
+            }
+
+            val card = player.slots[slot] ?: return
+            card.flip()
+            player.lastAction += "Flipped $card in $slot. "
+            onAllRefreshables { refreshAfterFlipCard() }
+
+            flippedThisTurn++
+
+            if (flippedThisTurn == 2) {
+                flippedThisTurn = 0
+                game.currentPlayer = (game.currentPlayer + 1) % game.players.size
+
+                if (game.currentPlayer == 0) {
+                    game.round = 1
+                }
+            }
+            return
+        }
+
+        // Regular flips during gameplay
         if (game.currentAction == Action.DRAW_DECK || game.currentAction == Action.DRAW_DISCARD) {
             throw IllegalStateException("This move is not allowed.")
         }
-        val player = game.players[game.currentPlayer]
         if (flippedThisTurn == 0 && slot == null) {
             throw IllegalStateException("You are not allowed to skip on first flip.")
         }

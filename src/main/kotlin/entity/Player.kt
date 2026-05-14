@@ -11,7 +11,7 @@ package entity
  */
 data class Player(
     val name: String,
-    var score: Int = 0,
+    var score: Int? = 0,
     var lastAction: String = "",
     val slots: MutableList<Card?> = MutableList(6) { null }
     // Slots:

@@ -21,4 +21,5 @@ class SixCardGolfGame(
     var currentAction: Action? = null,
     var hand: Card? = null,
     var finalRound: Boolean = false,
+    var round: Int = 0
 )
