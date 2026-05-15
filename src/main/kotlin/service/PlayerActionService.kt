@@ -142,15 +142,18 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * Flips a card from the card slots
      *
      * @param slot The slot in which the card will be flipped
+     * @throws IllegalArgumentException If the slot is neither null nor a number between 0 and 5.
      * @throws IllegalStateException If this action is not allowed at this time.
-     * @throws IllegalStateException If the player tried to skip on first flip.
      */
     fun flipCard(slot: Int?) {
         val player = game.players[game.currentPlayer]
+        if(slot != null && slot !in 0 .. 5) {
+            throw IllegalArgumentException("Slot has to be between 0 and 5 or null!")
+        }
         // Initial flips on game start
         if(game.round == 0) {
             if (slot == null) {
-                throw IllegalStateException("You must flip a card.")
+                throw IllegalArgumentException("You must flip a card.")
             }
 
             val card = player.slots[slot] ?: return
@@ -162,7 +165,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
             if (flippedThisTurn == 2) {
                 flippedThisTurn = 0
-                game.currentPlayer = (game.currentPlayer + 1) % game.players.size
+                rootService.gameService.nextPlayer()
 
                 if (game.currentPlayer == 0) {
                     game.round = 1

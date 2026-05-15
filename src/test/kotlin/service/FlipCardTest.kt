@@ -50,6 +50,28 @@ class FlipCardTest {
         }
     }
 
+    /** Tests if flipCard throws the correct exception if method is called with null in round 0 */
+    @Test
+    fun testIllegalArgumentRoundZero() {
+        val game = requireNotNull(rootService.currentGame)
+        game.round = 0
+        game.currentAction = Action.FLIP
+
+        assertFailsWith<IllegalArgumentException> {
+            rootService.playerActionService.flipCard(null)
+        }
+    }
+
+    /** Tests if flipCard throws the correct exception if a nonexistent slot has been called */
+    @Test
+    fun testIllegalArgument() {
+        val game = requireNotNull(rootService.currentGame)
+        game.round = 0
+
+        assertFailsWith<IllegalArgumentException> {
+            rootService.playerActionService.flipCard(6)
+        }
+    }
     /** Tests if flipCard works correctly when a slot is given to flip */
     @Test
     fun testFlipCard() {
