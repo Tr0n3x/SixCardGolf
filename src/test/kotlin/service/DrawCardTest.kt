@@ -38,6 +38,7 @@ class DrawCardTest {
     fun testDiscard() {
         val game = requireNotNull(rootService.currentGame)
         val card = game.discard.last()
+        game.round = 1
         rootService.playerActionService.drawCard(true)
 
         assertEquals(card,game.hand)
@@ -52,6 +53,8 @@ class DrawCardTest {
         val game = requireNotNull(rootService.currentGame)
         val card = game.deck.last()
         card.flip()
+        game.round = 1
+
         rootService.playerActionService.drawCard(false)
 
         assertEquals(card,game.hand)

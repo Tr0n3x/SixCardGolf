@@ -155,7 +155,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             if (slot == null) {
                 throw IllegalArgumentException("You must flip a card.")
             }
-
             val card = player.slots[slot] ?: return
             card.flip()
             player.lastAction += "Flipped $card in $slot. "
@@ -209,7 +208,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalStateException If a certain action is not allowed.
      */
     fun drawCard(discard: Boolean) {
-        if (game.currentAction != null) {
+        if (game.currentAction != null || game.round == 0) {
             throw IllegalStateException("This move is not allowed.")
         }
         val player = game.players[game.currentPlayer]
@@ -246,9 +245,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalStateException If a certain action is not allowed.
      */
     fun placeCard(slot: Int?) {
-        if (game.currentAction != Action.DRAW_DECK &&
-            game.currentAction != Action.DRAW_DISCARD
-        ) {
+        if ((game.currentAction != Action.DRAW_DECK && game.currentAction != Action.DRAW_DISCARD) || game.round == 0) {
             throw IllegalStateException("This move is not allowed.")
         }
         val player = game.players[game.currentPlayer]

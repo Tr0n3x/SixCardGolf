@@ -48,6 +48,7 @@ class PlaceCardTest {
     @Test
     fun testDiscardAfterDrawFromDeck() {
         val game = requireNotNull(rootService.currentGame)
+        game.round = 1
 
         rootService.playerActionService.drawCard(false)
         val drawnCard = game.hand
@@ -67,6 +68,7 @@ class PlaceCardTest {
         val game = requireNotNull(rootService.currentGame)
         val player = game.players[game.currentPlayer]
         val oldCard = player.slots[0]
+        game.round = 1
 
         rootService.playerActionService.drawCard(false)
         val drawnCard = game.hand
