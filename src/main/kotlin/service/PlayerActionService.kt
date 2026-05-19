@@ -16,7 +16,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
     private var flippedThisTurn = 0
 
-    /** Initiates the last round if all requirements are met. */
+    /**
+     * Initiates the last round if all requirements are met.
+     *
+     * If [allCardsOpen] is true, the `finalRound` starts.
+     * Otherwise, the `lastAction` will be reset and the next players turn starts.
+     */
     private fun finishMove() {
         if (allCardsOpen(game.players[game.currentPlayer])) {
             if (!game.finalRound) {
@@ -26,6 +31,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 game.finalPlays = game.finalPlays?.minus(1)
             }
         }
+
         if (game.finalPlays == 0) {
             endGame()
         } else {
@@ -37,8 +43,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     /**
      * Ends the game.
      *
-     * Flips all cards that have not been flipped yet, removes identical rows,
-     * calculates and shows scoreboard
+     * Flips all cards that have not been flipped yet, removes identical rows via [removeRow],
+     * calculates and shows scoreboard via [calculateScore].
      */
     private fun endGame() {
         for (i in game.players.indices) {
@@ -49,9 +55,11 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                     card.flip()
                 }
             }
+
             removeRow(player, 0)
             removeRow(player, 1)
         }
+
         calculateScore()
         onAllRefreshables { refreshAfterGameEnd() }
     }
@@ -74,6 +82,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if (row != 0 && row != 1) {
             throw IllegalArgumentException("Row has to be 0 or 1.")
         }
+
         if (allCardsNotNull(cards) && allCardsFlipped(cards) && sameValueCards(cards)) {
             indices.forEach { player.slots[it] = null }
             onAllRefreshables { refreshAfterRowRemove(indices) }
@@ -116,19 +125,16 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         return player.slots[cardSlot1]?.value?.title == player.slots[cardSlot2]?.value?.title
     }
 
-    /** Calculates the score of the given player.
-     *
-     * @return The score of the player.
-     */
+    /** Calculates the score of all player. */
     private fun calculateScore() {
         for (player in game.players) {
-            var i = 0
-            while (i < player.slots.size) {
-                if (!boolSlotsEqual(player, i, i + 1)) {
-                    player.score = player.score?.plus(player.slots[i]?.value?.value ?: 0)
-                    player.score = player.score?.plus(player.slots[i + 1]?.value?.value ?: 0)
+            var cardSlot = 0
+            while (cardSlot < player.slots.size) {
+                if (!boolSlotsEqual(player, cardSlot, cardSlot + 1)) {
+                    player.score = player.score?.plus(player.slots[cardSlot]?.value?.value ?: 0)
+                    player.score = player.score?.plus(player.slots[cardSlot + 1]?.value?.value ?: 0)
                 }
-                i += 2
+                cardSlot += 2
             }
         }
     }
@@ -147,14 +153,17 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      */
     fun flipCard(slot: Int?) {
         val player = game.players[game.currentPlayer]
+
         if(slot != null && slot !in 0 .. 5) {
             throw IllegalArgumentException("Slot has to be between 0 and 5 or null!")
         }
+
         // Initial flips on game start
         if(game.round == 0) {
             if (slot == null) {
                 throw IllegalArgumentException("You must flip a card.")
             }
+
             val card = player.slots[slot] ?: return
             card.flip()
             player.lastAction += "Flipped $card in $slot. "
@@ -177,9 +186,11 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if (game.currentAction == Action.DRAW_DECK || game.currentAction == Action.DRAW_DISCARD) {
             throw IllegalStateException("This move is not allowed.")
         }
+
         if (flippedThisTurn == 0 && slot == null) {
             throw IllegalStateException("You are not allowed to skip on first flip.")
         }
+
         if (slot != null) {
             val card = player.slots[slot] ?: return
 
@@ -197,6 +208,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             if (flippedThisTurn >= 2 || allCardsOpen(player)) {
                 finishMove()
                 flippedThisTurn = 0
+                return
             }
         }
     }
@@ -211,7 +223,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if (game.currentAction != null || game.round == 0) {
             throw IllegalStateException("This move is not allowed.")
         }
+
         val player = game.players[game.currentPlayer]
+
+        // draw from discard
         if (discard) {
             if (game.discard.isNotEmpty()) {
                 val card = game.discard.removeLast()
@@ -221,6 +236,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 game.currentAction = Action.DRAW_DISCARD
                 player.lastAction += "Drew ${game.hand} from discard. "
             }
+        // draw from deck
         } else {
             if (game.deck.isNotEmpty()) {
                 val card = game.deck.removeLast()
@@ -248,7 +264,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if ((game.currentAction != Action.DRAW_DECK && game.currentAction != Action.DRAW_DISCARD) || game.round == 0) {
             throw IllegalStateException("This move is not allowed.")
         }
+
         val player = game.players[game.currentPlayer]
+
+        // player drew from deck, so flipCard is allowed afterward. Therefore, currentAction has to be Action.FLIP
         if (slot == null) {
             if (game.currentAction != Action.DRAW_DECK) {
                 throw IllegalStateException("This move is not allowed.")
@@ -261,22 +280,30 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             player.lastAction += "Discarded drawn card $card. "
             game.currentAction = Action.FLIP
             flippedThisTurn = 1
+
             return
         }
+
+        // Replacing the card in a slot with the card from the hand
         val oldCard = player.slots[slot]
+
         player.slots[slot]?.let {
             if (it.faceDown) it.flip()
             game.discard.add(it)
             onAllRefreshables { refreshAfterDiscardPlace() }
         }
+
         val newCard = game.hand
+
         game.hand?.let {
             player.slots[slot] = it
             onAllRefreshables { refreshAfterPlaceCard() }
         }
+
         game.hand = null
         onAllRefreshables { refreshAfterHandPlace() }
         player.lastAction += "Replaced $oldCard with $newCard in slot $slot. "
+
         removeRow(player, 0)
         removeRow(player, 1)
         finishMove()

@@ -28,9 +28,11 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
     fun startGame(playerNames: List<String>, randomOrder: Boolean, testMode: Boolean) {
         val playerList = playerNames.map { Player(it) }
         val game = SixCardGolfGame(playerList.toMutableList())
+
         if (playerList.size !in 2..4) {
             throw IllegalStateException("2 to 4 players are required to start the game")
         }
+
         if (testMode) {
             val deck = createShortDeck()
             game.deck = deck
@@ -38,20 +40,25 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             val deck = createDeck()
             game.deck = deck
         }
+
         game.deck.shuffle()
+
         for (player in game.players) {
             for (i in player.slots.indices) {
                 player.slots[i] = game.deck.removeLast() // Potential removeFirst()
             }
         }
+
         game.discard.add(game.deck.removeLast())
         game.discard.last().flip()
+
         if (randomOrder) {
             val originalOrder = game.players.toList()
             do {
                 game.players.shuffle()
             } while (game.players == originalOrder)
         }
+
         game.currentPlayer = 0
         rootService.currentGame = game
         onAllRefreshables { refreshAfterGameStart() }
@@ -67,6 +74,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
     /**
      * Creates a full deck of cards containing all combinations of [CardSuit] and [CardValue].
+     *
      * @return A list representing the complete deck of cards.
      */
     private fun createDeck(): MutableList<Card> {
@@ -81,6 +89,7 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
 
     /**
      * Creates a short deck of cards containing all combinations of [CardSuit] and [CardValue] in a short deck.
+     *
      * 3 different card values * 4 different card suits * 4 times executed = 48 cards.
      * Plus 4 extra cards to get a full set of 52 cards.
      * @return A list representing the short deck of cards.
