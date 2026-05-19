@@ -1,6 +1,9 @@
 package service
 
 import entity.Action
+import entity.Card
+import entity.CardSuit
+import entity.CardValue
 import kotlin.test.*
 
 /** Test class for [PlayerActionService.placeCard]. */
@@ -81,5 +84,18 @@ class PlaceCardTest {
         assertTrue(refreshableTest.refreshAfterDiscardPlace)
         assertTrue(refreshableTest.refreshAfterPlaceCard)
         assertTrue(refreshableTest.refreshAfterHandPlace)
+    }
+
+    /** Tests if the method will throw the correct error when being called with null as parameter and not Action.DRAW_DECK */
+    @Test
+    fun testNullDrawDeck() {
+        val game = requireNotNull(rootService.currentGame)
+        game.currentAction = Action.DRAW_DISCARD
+        game.hand = Card(CardSuit.CLUBS, CardValue.TWO, false)
+        game.round = 1
+
+        assertFailsWith<IllegalStateException> {
+            rootService.playerActionService.placeCard(null)
+        }
     }
 }

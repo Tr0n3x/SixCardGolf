@@ -192,4 +192,21 @@ class FlipCardTest {
 
         assertEquals(1, game.currentPlayer)
     }
+
+    /** Tests if the round increases when the last player in round 0 flips their cards */
+    @Test
+    fun testRoundIncrease() {
+        val game = requireNotNull(rootService.currentGame)
+        game.round = 0
+        repeat(3) {
+            game.players[game.currentPlayer].slots[0]?.flip()
+            game.players[game.currentPlayer].slots[1]?.flip()
+            game.currentPlayer++
+        }
+        rootService.playerActionService.flipCard(0)
+        rootService.playerActionService.flipCard(1)
+
+        assertEquals(0, game.currentPlayer)
+        assertEquals(1, game.round)
+    }
 }
