@@ -79,10 +79,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val cards = if (row == 0) cardsRow0 else cardsRow1
         val indices = if (row == 0) intArrayOf(0, 2, 4) else intArrayOf(1, 3, 5)
 
-        if (row != 0 && row != 1) {
-            throw IllegalArgumentException("Row has to be 0 or 1.")
-        }
-
         if (allCardsNotNull(cards) && allCardsFlipped(cards) && sameValueCards(cards)) {
             indices.forEach { player.slots[it] = null }
             onAllRefreshables { refreshAfterRowRemove(indices) }
