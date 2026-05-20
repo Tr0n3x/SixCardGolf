@@ -209,4 +209,13 @@ class FlipCardTest {
         assertEquals(0, game.currentPlayer)
         assertEquals(1, game.round)
     }
+
+    /** Tests if error handling works correctly when no game has started yet. */
+    @Test
+    fun testNoGameStarted() {
+        rootService.currentGame = null
+        assertFailsWith<IllegalStateException> {
+            rootService.playerActionService.flipCard(0)
+        }
+    }
 }

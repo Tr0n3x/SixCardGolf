@@ -26,6 +26,11 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
      * @throws IllegalStateException If the number of players is not between 2 and 4.
      */
     fun startGame(playerNames: List<String>, randomOrder: Boolean, testMode: Boolean) {
+
+        if (rootService.currentGame != null) {
+            throw IllegalStateException("Game already started")
+        }
+
         val playerList = playerNames.map { Player(it) }
         val game = SixCardGolfGame(playerList.toMutableList())
 

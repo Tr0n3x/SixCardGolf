@@ -88,6 +88,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     /**
      * Checks whether a list of cards has the same value title.
      *
+     * @param cards List of cards which shall be checked for value title.
      * @return true if all cards have the same value title, otherwise false.
      */
     private fun sameValueCards(cards: List<Card?>): Boolean =
@@ -96,6 +97,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     /**
      * Checks whether a list of cards is flipped.
      *
+     * @param cards List of cards which shall be checked if they are `faceDown`.
      * @return true if all cards are flipped, otherwise false.
      */
     private fun allCardsFlipped(cards: List<Card?>): Boolean =
@@ -104,6 +106,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     /**
      * Checks whether a list of cards is not null.
      *
+     * @param cards List of cards which shall be checked if cards are present.
      * @return true if all cards are not null, otherwise false.
      */
     private fun allCardsNotNull(cards: List<Card?>): Boolean =
@@ -135,7 +138,11 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
     }
 
-    /** Returns if all cards are face up. */
+    /**
+     * Returns if all cards are face up.
+     *
+     * @param player The player for whom will be checked if all cards are indeed open
+     */
     private fun allCardsOpen(player: Player): Boolean {
         return player.slots.all { it?.faceDown == false }
     }
@@ -148,6 +155,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalStateException If this action is not allowed at this time.
      */
     fun flipCard(slot: Int?) {
+        if (rootService.currentGame == null) {
+            throw IllegalStateException("Game not found.")
+        }
+
         val player = game.players[game.currentPlayer]
 
         if(slot != null && slot !in 0 .. 5) {
@@ -163,7 +174,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             val card = player.slots[slot] ?: return
             card.flip()
             player.lastAction += "Flipped $card in $slot. "
-            onAllRefreshables { refreshAfterFlipCard() }
+            onAllRefreshables { refreshAfterFlipCard(slot) }
 
             flippedThisTurn++
 
@@ -191,7 +202,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             val card = player.slots[slot] ?: return
 
             card.flip()
-            onAllRefreshables { refreshAfterFlipCard() }
+            onAllRefreshables { refreshAfterFlipCard(slot) }
 
             player.lastAction += "Flipped $card in slot $slot. "
 
@@ -216,6 +227,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalStateException If a certain action is not allowed.
      */
     fun drawCard(discard: Boolean) {
+        if (rootService.currentGame == null) {
+            throw IllegalStateException("Game not found.")
+        }
+
         if (game.currentAction != null || game.round == 0) {
             throw IllegalStateException("This move is not allowed.")
         }
@@ -257,6 +272,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalStateException If a certain action is not allowed.
      */
     fun placeCard(slot: Int?) {
+        if (rootService.currentGame == null) {
+            throw IllegalStateException("Game not found.")
+        }
+
         if ((game.currentAction != Action.DRAW_DECK && game.currentAction != Action.DRAW_DISCARD) || game.round == 0) {
             throw IllegalStateException("This move is not allowed.")
         }
@@ -293,7 +312,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         game.hand?.let {
             player.slots[slot] = it
-            onAllRefreshables { refreshAfterPlaceCard() }
+            onAllRefreshables { refreshAfterPlaceCard(slot) }
         }
 
         game.hand = null

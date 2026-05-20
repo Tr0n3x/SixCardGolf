@@ -70,6 +70,24 @@ class StartGameTest {
         }
     }
 
+    /** Tests if error handling works correctly when game has started already. */
+    @Test
+    fun testGameStartedAlready() {
+        rootService.gameService.startGame(
+            playerNames = listOf("PlayerOne", "PlayerTwo", "PlayerThree", "PlayerFour"),
+            randomOrder = false,
+            testMode = false
+        )
+
+        assertFailsWith<IllegalStateException> {
+            rootService.gameService.startGame(
+                playerNames = listOf("PlayerOne", "PlayerTwo", "PlayerThree", "PlayerFour"),
+                randomOrder = false,
+                testMode = false
+            )
+        }
+    }
+
     /** Tests if the game setup with one player is correctly throwing an [IllegalStateException] */
     @Test
     fun testNotEnoughPlayers() {

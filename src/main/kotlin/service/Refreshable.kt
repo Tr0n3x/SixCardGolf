@@ -18,10 +18,10 @@ interface Refreshable {
     fun refreshAfterGameEnd() {}
 
     /** Refreshes the GUI after a card has been flipped. */
-    fun refreshAfterFlipCard() {}
+    fun refreshAfterFlipCard(slot: Int) {}
 
     /** Refreshes the GUI after a card has been placed in your slots. */
-    fun refreshAfterPlaceCard() {}
+    fun refreshAfterPlaceCard(slot: Int) {}
 
     /** Refreshes the GUI after a card has been placed in the hand slot. */
     fun refreshAfterHandPlace() {}

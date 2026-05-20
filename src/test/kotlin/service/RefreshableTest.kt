@@ -62,11 +62,11 @@ class RefreshableTest(val rootService: RootService): Refreshable {
         refreshAfterGameEnd = true
     }
 
-    override fun refreshAfterFlipCard() {
+    override fun refreshAfterFlipCard(slot: Int) {
         refreshAfterFlipCard = true
     }
 
-    override fun refreshAfterPlaceCard() {
+    override fun refreshAfterPlaceCard(slot: Int) {
         refreshAfterPlaceCard = true
     }
 

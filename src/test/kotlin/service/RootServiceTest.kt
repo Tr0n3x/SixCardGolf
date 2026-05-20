@@ -10,6 +10,7 @@ class RootServiceTest {
     /** Private Class to make the tests work */
     private class TestRefreshable : Refreshable {
         override fun refreshAfterGameEnd() {}
+        override fun refreshAfterGameStart() {}
     }
 
     /** Tests if AddRefreshable works without error. */

@@ -98,4 +98,13 @@ class PlaceCardTest {
             rootService.playerActionService.placeCard(null)
         }
     }
+
+    /** Tests if error handling works correctly when no game has started yet. */
+    @Test
+    fun testNoGameStarted() {
+        rootService.currentGame = null
+        assertFailsWith<IllegalStateException> {
+            rootService.playerActionService.placeCard(0)
+        }
+    }
 }

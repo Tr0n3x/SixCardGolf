@@ -62,4 +62,13 @@ class DrawCardTest {
         assertTrue(refreshableTest.refreshAfterDeckTake)
         assertTrue(refreshableTest.refreshAfterHandPlace)
     }
+
+    /** Tests if error handling works correctly when no game has started yet. */
+    @Test
+    fun testNoGameStarted() {
+        rootService.currentGame = null
+        assertFailsWith<IllegalStateException> {
+            rootService.playerActionService.drawCard(true)
+        }
+    }
 }
