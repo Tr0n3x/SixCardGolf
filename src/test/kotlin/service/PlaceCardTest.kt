@@ -86,7 +86,10 @@ class PlaceCardTest {
         assertTrue(refreshableTest.refreshAfterHandPlace)
     }
 
-    /** Tests if the method will throw the correct error when being called with null as parameter and not Action.DRAW_DECK */
+    /**
+     * Tests if error handling works correctly when being called with null as parameter
+     * and not Action.DRAW_DECK
+     */
     @Test
     fun testNullDrawDeck() {
         val game = requireNotNull(rootService.currentGame)

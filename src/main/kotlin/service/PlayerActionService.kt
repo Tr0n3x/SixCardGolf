@@ -155,9 +155,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalStateException If this action is not allowed at this time.
      */
     fun flipCard(slot: Int?) {
-        if (rootService.currentGame == null) {
-            throw IllegalStateException("Game not found.")
-        }
+        isNoGameRunning()
 
         val player = game.players[game.currentPlayer]
 
@@ -227,9 +225,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalStateException If a certain action is not allowed.
      */
     fun drawCard(discard: Boolean) {
-        if (rootService.currentGame == null) {
-            throw IllegalStateException("Game not found.")
-        }
+        isNoGameRunning()
 
         if (game.currentAction != null || game.round == 0) {
             throw IllegalStateException("This move is not allowed.")
@@ -272,9 +268,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @throws IllegalStateException If a certain action is not allowed.
      */
     fun placeCard(slot: Int?) {
-        if (rootService.currentGame == null) {
-            throw IllegalStateException("Game not found.")
-        }
+        isNoGameRunning()
 
         if ((game.currentAction != Action.DRAW_DECK && game.currentAction != Action.DRAW_DISCARD) || game.round == 0) {
             throw IllegalStateException("This move is not allowed.")
@@ -322,5 +316,11 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         removeRow(player, 0)
         removeRow(player, 1)
         finishMove()
+    }
+
+    fun isNoGameRunning() {
+        if (rootService.currentGame == null) {
+            throw IllegalStateException("Game not found.")
+        }
     }
 }
