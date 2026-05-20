@@ -148,58 +148,76 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
-     * Flips a card from the card slots
+     * Entry Point to flip a card from the card slots.
+     *
+     * Uses [initialFlipCard] and [regularFlipCard] for the game logic.
      *
      * @param slot The slot in which the card will be flipped
      * @throws IllegalArgumentException If the slot is neither null nor a number between 0 and 5.
-     * @throws IllegalStateException If this action is not allowed at this time.
      */
     fun flipCard(slot: Int?) {
         isNoGameRunning()
 
-        val player = game.players[game.currentPlayer]
-
-        if(slot != null && slot !in 0 .. 5) {
+        if (slot != null && slot !in 0..5) {
             throw IllegalArgumentException("Slot has to be between 0 and 5 or null!")
         }
 
-        // Initial flips on game start
-        if(game.round == 0) {
-            if (slot == null) {
-                throw IllegalArgumentException("You must flip a card.")
-            }
+        if (game.round == 0) {
+            initialFlipCard(slot)
+        } else {
+            regularFlipCard(slot)
+        }
+    }
 
-            val card = player.slots[slot] ?: return
-            card.flip()
-            player.lastAction += "Flipped $card in $slot. "
-            onAllRefreshables { refreshAfterFlipCard(slot) }
-
-            flippedThisTurn++
-
-            if (flippedThisTurn == 2) {
-                flippedThisTurn = 0
-                rootService.gameService.nextPlayer()
-
-                if (game.currentPlayer == 0) {
-                    game.round = 1
-                }
-            }
-            return
+    /**
+     * The flip logic for the initial round (round 0).
+     *
+     * @param slot The slot in which the card will be flipped.
+     * @throws IllegalArgumentException When the player tries to skip flipping.
+     */
+    private fun initialFlipCard(slot: Int?) {
+        if (slot == null) {
+            throw IllegalArgumentException("You must flip a card.")
         }
 
-        // Regular flips during gameplay
-        if (game.currentAction == Action.DRAW_DECK || game.currentAction == Action.DRAW_DISCARD) {
-            throw IllegalStateException("This move is not allowed.")
+        val player = game.players[game.currentPlayer]
+        val card = player.slots[slot] ?: return
+
+        card.flip()
+        player.lastAction += "Flipped $card in $slot. "
+        onAllRefreshables { refreshAfterFlipCard(slot) }
+
+        flippedThisTurn++
+
+        if (flippedThisTurn == 2) {
+            flippedThisTurn = 0
+            rootService.gameService.nextPlayer()
+
+            if (game.currentPlayer == 0) game.round = 1
+        }
+    }
+
+    /**
+     * The flip logic for the regular game round (round 1+).
+     *
+     * @param slot The slot in which the card will be flipped.
+     * @throws IllegalArgumentException When the player tries to skip flipping.
+     */
+    private fun regularFlipCard(slot: Int?) {
+        val player = game.players[game.currentPlayer]
+
+        if(game.currentAction == Action.DRAW_DECK || game.currentAction == Action.DRAW_DISCARD) {
+            throw IllegalStateException ("This move is not allowed.")
         }
 
-        if (flippedThisTurn == 0 && slot == null) {
+        if(flippedThisTurn == 0 && slot == null) {
             throw IllegalStateException("You are not allowed to skip on first flip.")
         }
 
         if (slot != null) {
             val card = player.slots[slot] ?: return
-
             card.flip()
+
             onAllRefreshables { refreshAfterFlipCard(slot) }
 
             player.lastAction += "Flipped $card in slot $slot. "
@@ -213,7 +231,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             if (flippedThisTurn >= 2 || allCardsOpen(player)) {
                 finishMove()
                 flippedThisTurn = 0
-                return
             }
         }
     }
@@ -318,7 +335,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         finishMove()
     }
 
-    fun isNoGameRunning() {
+    /**
+     * Returns with an error if no game is running.
+     *
+     * @throws IllegalStateException If no game is currently running.
+     */
+    private fun isNoGameRunning() {
         if (rootService.currentGame == null) {
             throw IllegalStateException("Game not found.")
         }
