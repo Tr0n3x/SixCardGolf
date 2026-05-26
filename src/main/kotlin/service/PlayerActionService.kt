@@ -184,9 +184,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
 
         val player = game.players[game.currentPlayer]
-        val card = player.slots[slot] ?: return
+        val card = player.slots[slot]
 
-        card.flip()
+        card?.flip()
         player.lastAction += "Flipped $card in $slot. "
         onAllRefreshables { refreshAfterFlipCard(slot) }
 
@@ -218,8 +218,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
 
         if (slot != null) {
-            val card = player.slots[slot] ?: return
-            card.flip()
+            val card = player.slots[slot]
+            card?.flip()
 
             onAllRefreshables { refreshAfterFlipCard(slot) }
 
