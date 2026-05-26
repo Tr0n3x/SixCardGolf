@@ -94,7 +94,10 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         allowIndeterminate = false
     )
 
-    /** Decides whether the game starts with [service.GameService.createDeck] or [service.GameService.createShortDeck].  */
+    /**
+     * Decides whether the game starts with [service.GameService.createDeck]
+     * or [service.GameService.createShortDeck].
+     */
     private val testModeCheckBox = CheckBox(
         posX = 50,
         posY = 420,
@@ -151,6 +154,29 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         }
     }
 
+    init {
+        addComponents(titleLabel)
+        addComponents(playerOneTextField)
+        addComponents(playerTwoTextField)
+        addComponents(playerThreeTextField)
+        addComponents(playerFourTextField)
+        addComponents(enoughPlayerLabel)
+        addComponents(shuffleCheckBox)
+        addComponents(testModeCheckBox)
+        addComponents(exitButton)
+        addComponents(startButton)
+
+        // Listener to check if enough player names have been added
+        listOf(
+            playerOneTextField,
+            playerTwoTextField,
+            playerThreeTextField,
+            playerFourTextField
+        ).forEach {
+            it.onKeyReleased = { updateEnoughPlayersLabel() }
+        }
+    }
+
     /** Replaces the text of `enoughPlayersLabel` label when enough player names are entered */
     private fun updateEnoughPlayersLabel() {
         val count = listOf(
@@ -169,28 +195,6 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
 
         }
     }
-        init {
-            addComponents(titleLabel)
-            addComponents(playerOneTextField)
-            addComponents(playerTwoTextField)
-            addComponents(playerThreeTextField)
-            addComponents(playerFourTextField)
-            addComponents(enoughPlayerLabel)
-            addComponents(shuffleCheckBox)
-            addComponents(testModeCheckBox)
-            addComponents(exitButton)
-            addComponents(startButton)
-
-            // Listener to check if enough player names have been added
-            listOf(
-                playerOneTextField,
-                playerTwoTextField,
-                playerThreeTextField,
-                playerFourTextField
-            ).forEach {
-                it.onKeyReleased = { updateEnoughPlayersLabel() }
-            }
-        }
-    }
+}
 
 

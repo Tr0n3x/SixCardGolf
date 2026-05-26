@@ -537,6 +537,56 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     private val scoresScene = ScoresScene()
 
+    /**
+     * Initializes the scene by setting the background color and adding the label.
+     */
+    init {
+        addComponents(deckStack)
+        addComponents(discardStack)
+        addComponents(playerHand)
+        addComponents(skipButton)
+
+        addComponents(playerOneNameLabel)
+        addComponents(playerOneLogLabel)
+        addComponents(playerOneSlotZero)
+        addComponents(playerOneSlotOne)
+        addComponents(playerOneSlotTwo)
+        addComponents(playerOneSlotThree)
+        addComponents(playerOneSlotFour)
+        addComponents(playerOneSlotFive)
+
+        addComponents(playerTwoLogLabel)
+        addComponents(playerTwoNameLabel)
+        addComponents(playerTwoSlotZero)
+        addComponents(playerTwoSlotOne)
+        addComponents(playerTwoSlotTwo)
+        addComponents(playerTwoSlotThree)
+        addComponents(playerTwoSlotFour)
+        addComponents(playerTwoSlotFive)
+
+        addComponents(playerThreeLogLabel)
+        addComponents(playerThreeNameLabel)
+        addComponents(playerThreeSlotZero)
+        addComponents(playerThreeSlotOne)
+        addComponents(playerThreeSlotTwo)
+        addComponents(playerThreeSlotThree)
+        addComponents(playerThreeSlotFour)
+        addComponents(playerThreeSlotFive)
+
+        addComponents(playerFourLogLabel)
+        addComponents(playerFourNameLabel)
+        addComponents(playerFourSlotZero)
+        addComponents(playerFourSlotOne)
+        addComponents(playerFourSlotTwo)
+        addComponents(playerFourSlotThree)
+        addComponents(playerFourSlotFour)
+        addComponents(playerFourSlotFive)
+
+        addComponents(scoreboardBackground)
+        addComponents(scoreboardLabel)
+        addComponents(scoreLabels)
+    }
+
     /** Refreshes the deck,discard pile, player card slots, card slot when the game has started. */
     override fun refreshAfterGameStart() {
         val game = rootService.currentGame ?: return
@@ -712,12 +762,14 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Handles the click on a players card slot */
     private fun onSlotClick(thisPlayer: Int, slot: Int) {
-        if (game.currentPlayer == thisPlayer) {
-            if (player.slots[slot] != null && game.hand != null) {
-                rootService.playerActionService.placeCard(slot)
-            } else if (player.slots[slot] != null && player.slots[slot]!!.faceDown) {
-                rootService.playerActionService.flipCard(slot)
-            }
+        if (game.currentPlayer != thisPlayer) return
+
+        val card = player.slots[slot] ?: return
+
+        if (game.hand != null) {
+            rootService.playerActionService.placeCard(slot)
+        } else if (card.faceDown) {
+            rootService.playerActionService.flipCard(slot)
         }
     }
 
@@ -787,55 +839,5 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
             stackView.add(cardView)
             cardMap.add(card to cardView)
         }
-    }
-
-    /**
-     * Initializes the scene by setting the background color and adding the label.
-     */
-    init {
-        addComponents(deckStack)
-        addComponents(discardStack)
-        addComponents(playerHand)
-        addComponents(skipButton)
-
-        addComponents(playerOneNameLabel)
-        addComponents(playerOneLogLabel)
-        addComponents(playerOneSlotZero)
-        addComponents(playerOneSlotOne)
-        addComponents(playerOneSlotTwo)
-        addComponents(playerOneSlotThree)
-        addComponents(playerOneSlotFour)
-        addComponents(playerOneSlotFive)
-
-        addComponents(playerTwoLogLabel)
-        addComponents(playerTwoNameLabel)
-        addComponents(playerTwoSlotZero)
-        addComponents(playerTwoSlotOne)
-        addComponents(playerTwoSlotTwo)
-        addComponents(playerTwoSlotThree)
-        addComponents(playerTwoSlotFour)
-        addComponents(playerTwoSlotFive)
-
-        addComponents(playerThreeLogLabel)
-        addComponents(playerThreeNameLabel)
-        addComponents(playerThreeSlotZero)
-        addComponents(playerThreeSlotOne)
-        addComponents(playerThreeSlotTwo)
-        addComponents(playerThreeSlotThree)
-        addComponents(playerThreeSlotFour)
-        addComponents(playerThreeSlotFive)
-
-        addComponents(playerFourLogLabel)
-        addComponents(playerFourNameLabel)
-        addComponents(playerFourSlotZero)
-        addComponents(playerFourSlotOne)
-        addComponents(playerFourSlotTwo)
-        addComponents(playerFourSlotThree)
-        addComponents(playerFourSlotFour)
-        addComponents(playerFourSlotFive)
-
-        addComponents(scoreboardBackground)
-        addComponents(scoreboardLabel)
-        addComponents(scoreLabels)
     }
 }
