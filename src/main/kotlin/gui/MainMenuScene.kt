@@ -82,6 +82,16 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         font = Font(15, Color.RED, "JetBrains Mono ExtraBold")
     )
 
+    val uniquePlayerLabel = Label(
+        text = "Unique player names. ✗",
+        height = 50,
+        width = 200,
+        posX = 385,
+        posY = 320,
+        alignment = Alignment.CENTER_RIGHT,
+        font = Font(15, Color.RED, "JetBrains Mono ExtraBold")
+    )
+
     /** Decides if the players will be shuffled or not */
     private val shuffleCheckBox = CheckBox(
         posX = 50,
@@ -161,6 +171,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         addComponents(playerThreeTextField)
         addComponents(playerFourTextField)
         addComponents(enoughPlayerLabel)
+        addComponents(uniquePlayerLabel)
         addComponents(shuffleCheckBox)
         addComponents(testModeCheckBox)
         addComponents(exitButton)
@@ -173,7 +184,10 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
             playerThreeTextField,
             playerFourTextField
         ).forEach {
-            it.onKeyReleased = { updateEnoughPlayersLabel() }
+            it.onKeyReleased = {
+                updateEnoughPlayersLabel()
+                updateUniquePlayersLabel ()
+            }
         }
     }
 
@@ -192,7 +206,26 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         } else {
             enoughPlayerLabel.text = ("2 - 4 players required. ✗")
             enoughPlayerLabel.font = Font(15, Color.RED, "JetBrains Mono ExtraBold")
+        }
+    }
 
+    /** Replaces the text of `enoughUniqueLabel` label when all player names are unique. */
+    private fun updateUniquePlayersLabel() {
+        val names = listOf(
+            playerOneTextField.text,
+            playerTwoTextField.text,
+            playerThreeTextField.text,
+            playerFourTextField.text
+        ).filter { it.isNotBlank() }
+
+        val unique = names.map { it.trim().lowercase() }.toSet().size == names.size
+
+        if (unique) {
+            uniquePlayerLabel.text = ("Unique player names. ✓")
+            uniquePlayerLabel.font = Font(15, Color.GREEN, "JetBrains Mono ExtraBold")
+        } else {
+            uniquePlayerLabel.text = ("Unique player names. ✗")
+            uniquePlayerLabel.font = Font(15, Color.RED, "JetBrains Mono ExtraBold")
         }
     }
 }

@@ -581,10 +581,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         addComponents(playerFourSlotThree)
         addComponents(playerFourSlotFour)
         addComponents(playerFourSlotFive)
-
-        addComponents(scoreboardBackground)
-        addComponents(scoreboardLabel)
-        addComponents(scoreLabels)
     }
 
     /** Refreshes the deck,discard pile, player card slots, card slot when the game has started. */
@@ -749,6 +745,14 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     override fun refreshAfterGameEnd() {
         val game = rootService.currentGame ?: return
 
+        game.players.forEach { player ->
+            player.slots.forEach { card ->
+                if (card != null) {
+                    val cardView = cardMap.forward(card)
+                    showCard(card, cardView)
+                }
+            }
+        }
         val sortedPlayers = scoresScene.getSortedPlayers(game.players)
 
         sortedPlayers.forEachIndexed { i, player ->
@@ -758,6 +762,9 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
         scoreboardBackground.isVisible = true
         scoreboardLabel.isVisible = true
+        addComponents(scoreboardBackground)
+        addComponents(scoreboardLabel)
+        addComponents(scoreLabels)
     }
 
     /** Handles the click on a players card slot */
@@ -785,6 +792,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
             front = cardImageLoader.frontImageFor(card.suit, card.value),
             back = cardImageLoader.backImage
         )
+
         showCard(game.hand, cardView)
         discardStack.add(cardView)
     }
@@ -829,6 +837,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
                 front = cardImageLoader.frontImageFor(card.suit, card.value),
                 back = cardImageLoader.backImage
             )
+
+            cardView.isDisabled = true
 
             if (card.faceDown) {
                 cardView.showBack()

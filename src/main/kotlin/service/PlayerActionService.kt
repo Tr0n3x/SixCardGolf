@@ -34,6 +34,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
 
         if (game.finalPlays == 0) {
+            onAllRefreshables { refreshAfterEndTurn() }
             endGame()
         } else {
             rootService.gameService.nextPlayer()
@@ -187,7 +188,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val card = player.slots[slot]
 
         card?.flip()
-        player.lastAction += "Flipped $card in $slot. "
+        player.lastAction += "Flipped $card. "
         onAllRefreshables { refreshAfterFlipCard(slot) }
 
         flippedThisTurn++
@@ -196,7 +197,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             flippedThisTurn = 0
             rootService.gameService.nextPlayer()
 
-            if (game.currentPlayer == 0) game.round = 1
+            if (game.currentPlayer == 0) {
+                game.round = 1
+                game.players[0].lastAction = ""
+            }
         }
     }
 
@@ -223,7 +227,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
             onAllRefreshables { refreshAfterFlipCard(slot) }
 
-            player.lastAction += "Flipped $card in slot $slot. "
+            player.lastAction += "Flipped $card. "
 
             game.currentAction = Action.FLIP
             flippedThisTurn++
@@ -334,7 +338,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         game.hand = null
         onAllRefreshables { refreshAfterHandChange() }
-        player.lastAction += "Replaced $oldCard with $newCard in slot $slot. "
+        player.lastAction += "Replaced $oldCard with $newCard. "
 
         removeRow(player, 0)
         removeRow(player, 1)
