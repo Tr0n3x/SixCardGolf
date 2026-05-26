@@ -28,8 +28,10 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
     fun startGame(playerNames: List<String>, randomOrder: Boolean, testMode: Boolean) {
 
         if (rootService.currentGame != null) {
-            throw IllegalStateException("Game already started")
+            throw IllegalStateException("Game already started.")
         }
+
+        require(playerNames.all { it.isNotBlank() }) { "Player names must not be empty." }
 
         val playerList = playerNames.map { Player(it) }
         val game = SixCardGolfGame(playerList.toMutableList())
@@ -39,11 +41,9 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
         }
 
         if (testMode) {
-            val deck = createShortDeck()
-            game.deck = deck
+            game.deck = createShortDeck()
         } else {
-            val deck = createDeck()
-            game.deck = deck
+            game.deck = createDeck()
         }
 
         game.deck.shuffle()

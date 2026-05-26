@@ -24,7 +24,7 @@ interface Refreshable {
     fun refreshAfterPlaceCard(slot: Int) {}
 
     /** Refreshes the GUI after a card has been placed in the hand slot. */
-    fun refreshAfterHandPlace() {}
+    fun refreshAfterHandChange() {}
 
     /** Refreshes the GUI after a card has been taken from discard pile. */
     fun refreshAfterDiscardTake() {}

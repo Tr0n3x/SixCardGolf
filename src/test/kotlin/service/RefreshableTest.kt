@@ -70,7 +70,7 @@ class RefreshableTest(val rootService: RootService): Refreshable {
         refreshAfterPlaceCard = true
     }
 
-    override fun refreshAfterHandPlace() {
+    override fun refreshAfterHandChange() {
         refreshAfterHandPlace = true
     }
 

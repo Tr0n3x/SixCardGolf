@@ -38,4 +38,14 @@ class NextPlayerTest {
         rootService.gameService.nextPlayer()
         assertEquals(0, game.currentPlayer)
     }
+
+    /** Tests if error handling works correctly when the method is called while no game has started. */
+    @Test
+    fun testNoGameFound() {
+        rootService.currentGame = null
+
+        assertFailsWith<IllegalStateException> {
+            rootService.gameService.nextPlayer()
+        }
+    }
 }

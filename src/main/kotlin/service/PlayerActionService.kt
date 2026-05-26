@@ -23,20 +23,21 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * Otherwise, the `lastAction` will be reset and the next players turn starts.
      */
     private fun finishMove() {
-        if (allCardsOpen(game.players[game.currentPlayer])) {
-            if (!game.finalRound) {
-                game.finalRound = true
-                game.finalPlays = game.players.size - 1
-            } else {
-                game.finalPlays = game.finalPlays?.minus(1)
-            }
+        val player = game.players[game.currentPlayer]
+        if (allCardsOpen(player) && !game.finalRound) {
+            game.finalRound = true
+            game.finalPlays = game.players.size
+        }
+
+        if (game.finalRound) {
+            game.finalPlays = game.finalPlays?.minus(1)
         }
 
         if (game.finalPlays == 0) {
             endGame()
         } else {
-            game.players[game.currentPlayer].lastAction = ""
             rootService.gameService.nextPlayer()
+            game.players[game.currentPlayer].lastAction = ""
         }
     }
 
@@ -83,6 +84,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             indices.forEach { player.slots[it] = null }
             onAllRefreshables { refreshAfterRowRemove(indices) }
         }
+
     }
 
     /**
@@ -142,9 +144,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * Returns if all cards are face up.
      *
      * @param player The player for whom will be checked if all cards are indeed open
+     * @return true if all cards are open or null. Otherwise, false.
      */
-    private fun allCardsOpen(player: Player): Boolean {
-        return player.slots.all { it?.faceDown == false }
+    fun allCardsOpen(player: Player): Boolean {
+        return player.slots.all { it == null || !it.faceDown }
     }
 
     /**
@@ -206,11 +209,11 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     private fun regularFlipCard(slot: Int?) {
         val player = game.players[game.currentPlayer]
 
-        if(game.currentAction == Action.DRAW_DECK || game.currentAction == Action.DRAW_DISCARD) {
-            throw IllegalStateException ("This move is not allowed.")
+        if (game.currentAction == Action.DRAW_DECK || game.currentAction == Action.DRAW_DISCARD) {
+            throw IllegalStateException("This move is not allowed.")
         }
 
-        if(flippedThisTurn == 0 && slot == null) {
+        if (flippedThisTurn == 0 && slot == null) {
             throw IllegalStateException("You are not allowed to skip on first flip.")
         }
 
@@ -232,6 +235,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 finishMove()
                 flippedThisTurn = 0
             }
+        } else {
+            finishMove()
+            flippedThisTurn = 0
         }
     }
 
@@ -256,18 +262,18 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 val card = game.discard.removeLast()
                 onAllRefreshables { refreshAfterDiscardTake() }
                 game.hand = card
-                onAllRefreshables { refreshAfterHandPlace() }
+                onAllRefreshables { refreshAfterHandChange() }
                 game.currentAction = Action.DRAW_DISCARD
                 player.lastAction += "Drew ${game.hand} from discard. "
             }
-        // draw from deck
+            // draw from deck
         } else {
             if (game.deck.isNotEmpty()) {
                 val card = game.deck.removeLast()
                 onAllRefreshables { refreshAfterDeckTake() }
                 game.hand = card
                 game.hand?.flip()
-                onAllRefreshables { refreshAfterHandPlace() }
+                onAllRefreshables { refreshAfterHandChange() }
                 game.currentAction = Action.DRAW_DECK
                 player.lastAction += "Drew ${game.hand} from deck. "
             }
@@ -302,7 +308,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             game.hand?.let { game.discard.add(it) }
             onAllRefreshables { refreshAfterDiscardPlace() }
             game.hand = null
-            onAllRefreshables { refreshAfterHandPlace() }
+            onAllRefreshables { refreshAfterHandChange() }
             player.lastAction += "Discarded drawn card $card. "
             game.currentAction = Action.FLIP
             flippedThisTurn = 1
@@ -327,7 +333,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
 
         game.hand = null
-        onAllRefreshables { refreshAfterHandPlace() }
+        onAllRefreshables { refreshAfterHandChange() }
         player.lastAction += "Replaced $oldCard with $newCard in slot $slot. "
 
         removeRow(player, 0)

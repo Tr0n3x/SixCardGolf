@@ -88,6 +88,13 @@ class StartGameTest {
         }
     }
 
+    /** Tests if error handling works correctly when at least one empty name is in playerList. */
+    @Test
+    fun testEmptyName() {
+        assertFailsWith<IllegalArgumentException> {
+            rootService.gameService.startGame(playerNames = listOf("PlayerOne", "PlayerTwo", ""), randomOrder = false, testMode = false)
+        }
+    }
     /** Tests if the game setup with one player is correctly throwing an [IllegalStateException] */
     @Test
     fun testNotEnoughPlayers() {
