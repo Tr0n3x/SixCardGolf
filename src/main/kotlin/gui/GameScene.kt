@@ -13,6 +13,7 @@ import tools.aqua.bgw.core.Color
 import tools.aqua.bgw.util.BidirectionalMap
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
+import kotlin.system.exitProcess
 
 /**
  * Represents the game scene with all needed components.
@@ -472,11 +473,73 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     }
 
     private val scoreLabels = listOf(
-        Label(posX = 760, posY = 420, width = 300, height = 40, text = "", alignment = Alignment.CENTER),
-        Label(posX = 760, posY = 470, width = 300, height = 40, text = "", alignment = Alignment.CENTER),
-        Label(posX = 760, posY = 520, width = 300, height = 40, text = "", alignment = Alignment.CENTER),
-        Label(posX = 760, posY = 570, width = 300, height = 40, text = "", alignment = Alignment.CENTER)
+        Label(
+            posX = 760,
+            posY = 420,
+            width = 300,
+            height = 40,
+            text = "",
+            alignment = Alignment.CENTER,
+            font = Font(size = 40, color = Color.YELLOW)
+        ).apply { isVisible = false },
+        Label(
+            posX = 760,
+            posY = 470,
+            width = 300,
+            height = 40,
+            text = "",
+            alignment = Alignment.CENTER,
+            font = Font(size = 30)
+        ).apply { isVisible = false },
+        Label(
+            posX = 760,
+            posY = 520,
+            width = 300,
+            height = 40,
+            text = "",
+            alignment = Alignment.CENTER,
+            font = Font(size = 30)
+        ).apply { isVisible = false },
+        Label(
+            posX = 760,
+            posY = 570,
+            width = 300,
+            height = 40,
+            text = "",
+            alignment = Alignment.CENTER,
+            font = Font(size = 30)
+        ).apply { isVisible = false },
     )
+
+    private val scoreboardNewGameButton = Button(
+        posX = (1920 / 2) + 100,
+        posY = 650,
+        width = 130,
+        height = 50,
+        text = "Main Menu",
+        font = Font(20.0, Color(0x0f141f)),
+        visual = ColorVisual(Color(136, 221, 136))
+    ).apply {
+        isVisible = false
+        onMouseClicked = {
+            rootService.gameService.onAllRefreshables { refreshAfterReturnToMenu() }
+        }
+    }
+
+    private val scoreboardExitButton = Button(
+        posX = (1920 / 2) - 240,
+        posY = 650,
+        width = 130,
+        height = 50,
+        text = "Quit",
+        font = Font(20.0, Color(0x0f141f)),
+        visual = ColorVisual(Color(221, 136, 136))
+    ).apply {
+        isVisible = false
+        onMouseClicked = {
+            exitProcess(0)
+        }
+    }
 
     // Group player slots for easier access
     private val playerOneSlots = listOf(
@@ -581,17 +644,40 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         addComponents(playerFourSlotThree)
         addComponents(playerFourSlotFour)
         addComponents(playerFourSlotFive)
+
+        addComponents(scoreboardBackground)
+        addComponents(scoreboardLabel)
+        addComponents(scoreLabels)
+        addComponents(scoreboardNewGameButton)
+        addComponents(scoreboardExitButton)
     }
 
     /** Refreshes the deck,discard pile, player card slots, card slot when the game has started. */
     override fun refreshAfterGameStart() {
-        val game = rootService.currentGame ?: return
-
         // Clear gui
         cardMap.clear()
         deckStack.clear()
         discardStack.clear()
         allPlayerSlots.flatten().forEach { it.clear() }
+
+        // hide and disable scoreboard elements
+        scoreboardBackground.isVisible = false
+        scoreboardLabel.isVisible = false
+        scoreLabels.forEach { it.isVisible = false }
+        scoreboardNewGameButton.isVisible = false
+        scoreboardExitButton.isVisible = false
+
+        scoreboardBackground.isDisabled = true
+        scoreboardLabel.isDisabled = true
+        scoreLabels.forEach { it.isDisabled = true }
+
+        // activate game elements again
+        deckStack.isDisabled = false
+        discardStack.isDisabled = false
+        skipButton.isDisabled = false
+
+        // Reset logs
+        logLabels.forEach { it.text = "" }
 
         // Update deck
         initializeStackView(game.deck, deckStack, cardImageLoader)
@@ -629,7 +715,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Refreshes the log when a players turn has ended. */
     override fun refreshAfterEndTurn() {
-        val game = rootService.currentGame ?: return
         game.players.forEachIndexed { index, player ->
             logLabels[index].text = player.lastAction
         }
@@ -639,7 +724,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Refreshes the hand when a card has been placed in or removed from the hand slot */
     override fun refreshAfterHandChange() {
-        val game = rootService.currentGame ?: return
         val card = game.hand
         playerHand.clear()
 
@@ -662,7 +746,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
      * Same function as [refreshAfterDiscardPlace], so refactored into [refreshAfterDiscardChange]
      */
     override fun refreshAfterDiscardTake() {
-        val game = rootService.currentGame ?: return
         if (game.discard.isNotEmpty()) {
             refreshAfterDiscardChange()
         } else {
@@ -681,7 +764,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Refreshes the deck when a card from deck has been taken. */
     override fun refreshAfterDeckTake() {
-        val game = rootService.currentGame ?: return
         if (game.deck.isEmpty()) {
             deckStack.clear()
         }
@@ -689,7 +771,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Refreshes the slots of a certain row when it has been removed. */
     override fun refreshAfterRowRemove(slots: IntArray) {
-        val game = rootService.currentGame ?: return
         val playerIndex = game.currentPlayer
 
         slots.forEach { slotIndex ->
@@ -699,7 +780,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Refreshes a certain player card slot when a card has been placed/swapped. */
     override fun refreshAfterPlaceCard(slot: Int) {
-        val game = rootService.currentGame ?: return
         val playerIndex = game.currentPlayer
         val card = game.players[playerIndex].slots[slot]
 
@@ -721,7 +801,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Refreshes a certain card slot when a card has been flipped. */
     override fun refreshAfterFlipCard(slot: Int) {
-        val game = rootService.currentGame ?: return
         val playerIndex = game.currentPlayer
         val card = game.players[playerIndex].slots[slot] ?: return
 
@@ -743,7 +822,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Refreshes the scoreboard after the game has ended. */
     override fun refreshAfterGameEnd() {
-        val game = rootService.currentGame ?: return
+
+        // deactivate game elements
+        deckStack.isDisabled = true
+        discardStack.isDisabled = true
+        skipButton.isDisabled = true
 
         game.players.forEach { player ->
             player.slots.forEach { card ->
@@ -762,9 +845,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
         scoreboardBackground.isVisible = true
         scoreboardLabel.isVisible = true
-        addComponents(scoreboardBackground)
-        addComponents(scoreboardLabel)
-        addComponents(scoreLabels)
+        scoreboardNewGameButton.isVisible = true
+        scoreboardExitButton.isVisible = true
     }
 
     /** Handles the click on a players card slot */
@@ -782,7 +864,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Actual refresh method for [refreshAfterDiscardPlace] and [refreshAfterDiscardTake]*/
     private fun refreshAfterDiscardChange() {
-        val game = rootService.currentGame ?: return
         val card = game.discard.last()
         discardStack.clear()
 
@@ -808,7 +889,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Highlights [entity.SixCardGolfGame.currentPlayer] name */
     private fun highlightName() {
-        val game = rootService.currentGame ?: return
         nameLabels.forEachIndexed { index, label ->
             if (index == game.currentPlayer) {
                 label.font = Font(size = 30, color = Color.YELLOW)
@@ -817,7 +897,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
             }
         }
     }
-
 
     /**
      * clears [stackView], adds a new [CardView] for each

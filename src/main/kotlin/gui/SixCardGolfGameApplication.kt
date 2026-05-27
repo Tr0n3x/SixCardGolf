@@ -38,7 +38,20 @@ class SixCardGolfGameApplication : BoardGameApplication(
         )
     }
 
+    /**
+     * Refresh after the game started.
+     * Hides the Menu Scene.
+     */
     override fun refreshAfterGameStart() {
         this.hideMenuScene()
+    }
+
+    /**
+     * Refresh after the game ended and player want to return to main menu.
+     * Shows mainMenu and sets currentGame back to null.
+     */
+    override fun refreshAfterReturnToMenu() {
+        showMenuScene(mainMenuScene)
+        rootService.currentGame = null
     }
 }

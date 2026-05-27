@@ -40,4 +40,7 @@ interface Refreshable {
 
     /** Refreshes the GUI after a players turn has ended. */
     fun refreshAfterEndTurn() {}
+
+    /** Refreshes the GUI after a return to menu has been called. */
+    fun refreshAfterReturnToMenu() {}
 }
