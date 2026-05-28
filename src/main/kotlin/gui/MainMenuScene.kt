@@ -32,7 +32,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
     )
 
     // Text fields for player names
-    val playerOneTextField = TextField(
+    private val playerOneTextField = TextField(
         height = 50,
         width = (1920 / 3) - 100,
         posX = 50,
@@ -41,7 +41,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         prompt = "Enter Name..."
     )
 
-    val playerTwoTextField = TextField(
+    private val playerTwoTextField = TextField(
         height = 50,
         width = (1920 / 3) - 100,
         posX = 50,
@@ -50,7 +50,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         prompt = "Enter Name.."
     )
 
-    val playerThreeTextField = TextField(
+    private val playerThreeTextField = TextField(
         height = 50,
         width = (1920 / 3) - 100,
         posX = 50,
@@ -59,7 +59,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         prompt = "Enter Name.."
     )
 
-    val playerFourTextField = TextField(
+    private val playerFourTextField = TextField(
         height = 50,
         width = (1920 / 3) - 100,
         posX = 50,
@@ -72,7 +72,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
      * Label that turns green when player range is between 2 and 4. Otherwise, stays red.
      * @see updateEnoughPlayersLabel
      */
-    val enoughPlayerLabel = Label(
+    private val enoughPlayerLabel = Label(
         text = "2 - 4 players required. ✗",
         height = 50,
         width = 200,
@@ -82,7 +82,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         font = Font(15, Color.RED, "JetBrains Mono ExtraBold")
     )
 
-    val uniquePlayerLabel = Label(
+    private val uniquePlayerLabel = Label(
         text = "Unique player names. ✗",
         height = 50,
         width = 200,

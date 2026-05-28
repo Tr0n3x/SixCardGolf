@@ -28,11 +28,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 ),
     Refreshable {
 
-    val game get() = rootService.currentGame ?: throw IllegalStateException("Game not initialized")
-    val player get() = game.players[game.currentPlayer]
+    private val game get() = rootService.currentGame ?: throw IllegalStateException("Game not initialized")
+    private val player get() = game.players[game.currentPlayer]
 
     // Draw deck
-    val deckStack: CardStack<CardView> = CardStack<CardView>(
+    private val deckStack: CardStack<CardView> = CardStack<CardView>(
         posX = (1920 / 2) - 140, // Center: (1920/2)-65 --> BoardGameScene width / 2 - width / 2
         posY = (1080 / 2) - 100, // Center: (1080/2)-100 --> BoardGameScene height / 2 - height / 2
         height = 200,
@@ -45,7 +45,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     }
 
     // Discard pile
-    val discardStack: CardStack<CardView> = CardStack<CardView>(
+    private val discardStack: CardStack<CardView> = CardStack<CardView>(
         posX = (1920 / 2) + 10, // Center: (1920/2)-65 --> BoardGameScene width / 2 - width / 2
         posY = (1080 / 2) - 100, // Center: (1080/2)-100 --> BoardGameScene height / 2 - height / 2
         height = 200,
@@ -62,7 +62,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     }
 
     // Hand slot
-    val playerHand: CardStack<CardView> = CardStack(
+    private val playerHand: CardStack<CardView> = CardStack(
         posX = (1920 / 2) - 65, // Center: (1920/2)-65 --> BoardGameScene width / 2 - width / 2
         posY = (1080 / 2) + 200, // Center: (1080/2)-100 --> BoardGameScene height / 2 - height / 2
         height = 200,
@@ -71,7 +71,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     )
 
     // skip Button in main Menu
-    val skipButton = Button(
+    private val skipButton = Button(
         posX = (1920 / 2) - 65,
         posY = 980,
         width = 130,
@@ -578,14 +578,14 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     private val allPlayerSlots = listOf(playerOneSlots, playerTwoSlots, playerThreeSlots, playerFourSlots)
 
     // Group player names and logs for easier access
-    val nameLabels = listOf(
+    private val nameLabels = listOf(
         playerOneNameLabel,
         playerTwoNameLabel,
         playerThreeNameLabel,
         playerFourNameLabel
     )
 
-    val logLabels = listOf(
+    private val logLabels = listOf(
         playerOneLogLabel,
         playerTwoLogLabel,
         playerThreeLogLabel,
