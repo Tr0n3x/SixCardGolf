@@ -24,7 +24,7 @@ enum class CardValue(val title: String, val value: Int) {
     TEN("Ten", 10),
     JACK("Jack", 10),
     QUEEN("Queen", 10),
-    KING("King", 10),
+    KING("King", 0),
     ACE("Ace", 1),
     ;
 
