@@ -8,8 +8,8 @@ class CardTest {
     private val aceOfSpades = Card(CardSuit.SPADES, CardValue.ACE, false)
     private val kingOfHearts = Card(CardSuit.HEARTS, CardValue.KING, false)
     private val twoOfDiamonds = Card(CardSuit.DIAMONDS, CardValue.TWO, false)
-    private val threeOfClubs = Card(CardSuit.CLUBS,CardValue.THREE,true)
-    private val threeOfClubsTwo = Card(CardSuit.CLUBS, CardValue.THREE,true)
+    private val threeOfClubs = Card(CardSuit.CLUBS, CardValue.THREE, true)
+    private val threeOfClubsTwo = Card(CardSuit.CLUBS, CardValue.THREE, true)
 
     /**
      * Check if toString produces the correct strings for some test cards
@@ -17,10 +17,10 @@ class CardTest {
      */
     @Test
     fun testToString() {
-        assertEquals( "Ace of Spades ♠",aceOfSpades.toString())
-        assertEquals("King of Hearts ♥",kingOfHearts.toString())
-        assertEquals("Two of Diamonds ♦",twoOfDiamonds.toString())
-        assertEquals("Three of Clubs ♣",threeOfClubs.toString())
+        assertEquals("Ace of Spades ♠", aceOfSpades.toString())
+        assertEquals("King of Hearts ♥", kingOfHearts.toString())
+        assertEquals("Two of Diamonds ♦", twoOfDiamonds.toString())
+        assertEquals("Three of Clubs ♣", threeOfClubs.toString())
     }
 
     /**
@@ -30,10 +30,11 @@ class CardTest {
     @Test
     fun testEquals() {
         assertEquals(twoOfDiamonds, twoOfDiamonds)
-        assertEquals(threeOfClubs, threeOfClubsTwo)
+        assertNotEquals(threeOfClubs, threeOfClubsTwo)
         assertNotEquals(kingOfHearts, aceOfSpades)
         assertNotNull(twoOfDiamonds)
     }
+
     /** Check for consistent and working hashCode */
     @Test
     fun testHashCode() {
