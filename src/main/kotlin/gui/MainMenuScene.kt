@@ -127,7 +127,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         height = 50,
         text = "Quit",
         font = Font(20.0, Color.DARK_GRAY, "JetBrains Mono ExtraBold"),
-        visual = ColorVisual(Color(221,136,136))
+        visual = ColorVisual(Color(221, 136, 136))
     ).apply {
         onMouseClicked = {
             exitProcess(0)
@@ -186,7 +186,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         ).forEach {
             it.onKeyReleased = {
                 updateEnoughPlayersLabel()
-                updateUniquePlayersLabel ()
+                updateUniquePlayersLabel()
             }
         }
     }

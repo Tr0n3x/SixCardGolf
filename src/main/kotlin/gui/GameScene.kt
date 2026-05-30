@@ -724,42 +724,43 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     /** Refreshes the hand when a card has been placed in or removed from the hand slot */
     override fun refreshAfterHandChange() {
-        val card = game.hand
         playerHand.clear()
 
-        if (card != null) {
-            val cardView = CardView(
-                width = 130,
-                height = 200,
-                front = cardImageLoader.frontImageFor(card.suit, card.value),
-                back = cardImageLoader.backImage
-            )
+        val card = game.hand ?: return
+        val cardView = cardMap.forward(card)
 
-            playerHand.add(cardView)
-            cardMap.add(card to cardView)
-            showCard(game.hand, cardView)
+        if (cardView.parent != null) {
+            cardView.removeFromParent()
         }
+
+        showCard(card, cardView)
+        playerHand.add(cardView)
     }
 
-    /**
-     * Refreshes the discard pile when a card has been taken from discard pile.
-     * Same function as [refreshAfterDiscardPlace], so refactored into [refreshAfterDiscardChange]
-     */
+    /** Refreshes the discard pile when a card has been taken from discard pile. */
     override fun refreshAfterDiscardTake() {
-        if (game.discard.isNotEmpty()) {
-            refreshAfterDiscardChange()
-        } else {
-            discardStack.clear()
-        }
+        discardStack.clear()
 
+        game.discard.lastOrNull()?.let { card ->
+            val cardView = cardMap.forward(card)
+            showCard(card, cardView)
+            discardStack.add(cardView)
+        }
     }
 
-    /**
-     * Refreshes the discard pile when a card has been taken from discard pile.
-     * Same function as [refreshAfterDiscardTake], so refactored into [refreshAfterDiscardChange]
-     */
+    /** Refreshes the discard pile when a card has been taken from discard pile. */
     override fun refreshAfterDiscardPlace() {
-        refreshAfterDiscardChange()
+        val card = game.discard.lastOrNull() ?: return
+        val cardView = cardMap.forward(card)
+
+        if (cardView.parent != null) {
+            cardView.removeFromParent()
+        }
+
+        showCard(card, cardView)
+
+        discardStack.clear()
+        discardStack.add(cardView)
     }
 
     /** Refreshes the deck when a card from deck has been taken. */
@@ -784,18 +785,21 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         val card = game.players[playerIndex].slots[slot]
 
         val slotView = allPlayerSlots[playerIndex][slot]
-        slotView.clear()
 
         if (card != null) {
-            val cardView = CardView(
-                width = 130,
-                height = 200,
-                front = cardImageLoader.frontImageFor(card.suit, card.value),
-                back = cardImageLoader.backImage
-            )
+            val cardView = cardMap.forward(card)
+
+            // remove from old container
+            if (cardView.parent != null) cardView.removeFromParent()
+
+            // clear slot
+            slotView.clear()
+
+            // update card side
             showCard(card, cardView)
+
+            // add to new container
             slotView.add(cardView)
-            cardMap.add(card to cardView)
         }
     }
 
@@ -804,20 +808,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         val playerIndex = game.currentPlayer
         val card = game.players[playerIndex].slots[slot] ?: return
 
-        val slotView = allPlayerSlots[playerIndex][slot]
-        slotView.clear()
-
-        val cardView = CardView(
-            width = 130,
-            height = 200,
-            front = cardImageLoader.frontImageFor(card.suit, card.value),
-            back = cardImageLoader.backImage
-        )
-
+        val cardView = cardMap.forward(card)
         showCard(card, cardView)
-
-        slotView.add(cardView)
-        cardMap.add(card to cardView)
     }
 
     /** Refreshes the scoreboard after the game has ended. */
@@ -836,6 +828,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
                 }
             }
         }
+
         val sortedPlayers = scoresScene.getSortedPlayers(game.players)
 
         sortedPlayers.forEachIndexed { i, player ->
@@ -860,22 +853,6 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         } else if (card.faceDown) {
             rootService.playerActionService.flipCard(slot)
         }
-    }
-
-    /** Actual refresh method for [refreshAfterDiscardPlace] and [refreshAfterDiscardTake]*/
-    private fun refreshAfterDiscardChange() {
-        val card = game.discard.last()
-        discardStack.clear()
-
-        val cardView = CardView(
-            width = 130,
-            height = 200,
-            front = cardImageLoader.frontImageFor(card.suit, card.value),
-            back = cardImageLoader.backImage
-        )
-
-        showCard(game.hand, cardView)
-        discardStack.add(cardView)
     }
 
     /** Shows the card front or back in gui. */
