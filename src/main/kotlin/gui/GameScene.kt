@@ -951,7 +951,9 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
             slots.forEachIndexed { slotIndex, _ ->
                 val card = game.players[playerIndex].slots[slotIndex]
-                val clickable = playerIndex == game.currentPlayer && card != null && (game.hand != null || card.faceDown)
+                val clickable =
+                    playerIndex == game.currentPlayer && card != null &&
+                            (game.hand != null || card.faceDown)
 
                 slotHighlights[playerIndex][slotIndex].isVisible = clickable
             }
