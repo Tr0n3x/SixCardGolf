@@ -142,7 +142,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         height = 50,
         text = "Start",
         font = Font(20.0, Color.DARK_GRAY, "JetBrains Mono ExtraBold"),
-        visual = ColorVisual(Color(136, 221, 136))
+        visual = ColorVisual(Color(128, 128, 128))
     ).apply {
         onMouseClicked = {
             val playerList = listOf(
@@ -201,6 +201,11 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         val uniqueNames = playerList.size == playerList.toSet().size
 
         startButton.isDisabled = !(enoughPlayers && uniqueNames)
+        if(startButton.isDisabled) {
+            startButton.visual = ColorVisual(Color(128, 128, 128))
+        } else {
+            startButton.visual = ColorVisual(Color(136, 221, 136))
+        }
     }
 
     /** Replaces the text of `enoughPlayersLabel` label when enough player names are entered */

@@ -100,7 +100,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     )
 
     private val playerOneLogLabel = Label(
-        width = 600,
+        width = 700,
         height = 45,
         posX = 1920 - 1800,
         posY = 1080 - 1050,
@@ -191,7 +191,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     )
 
     private val playerTwoLogLabel = Label(
-        width = 600,
+        width = 700,
         height = 45,
         posX = (1920 / 2) + 410,
         posY = 1080 - 1050,
@@ -282,7 +282,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     )
 
     private val playerThreeLogLabel = Label(
-        width = 600,
+        width = 700,
         height = 45,
         posX = 1920 - 1800,
         posY = 1080 - 515,
@@ -373,7 +373,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     )
 
     private val playerFourLogLabel = Label(
-        width = 600,
+        width = 700,
         height = 45,
         posX = (1920 / 2) + 410,
         posY = 1080 - 515,
@@ -581,6 +581,45 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
     private val allPlayerSlots = listOf(playerOneSlots, playerTwoSlots, playerThreeSlots, playerFourSlots)
 
+    // Here start all highlight Labels
+    private val deckHighlight = Label(
+        posX = deckStack.posX - 4,
+        posY = deckStack.posY - 4,
+        width = deckStack.width + 8,
+        height = deckStack.height + 8,
+        visual = ColorVisual(255, 255, 0),
+    ).apply { isVisible = false }
+
+    private val discardHighlight = Label(
+        posX = discardStack.posX - 4,
+        posY = discardStack.posY - 4,
+        width = discardStack.width + 8,
+        height = discardStack.height + 8,
+        visual = ColorVisual(255, 255, 0),
+    ).apply { isVisible = false }
+
+    private val skipButtonHighlight = Label(
+        posX = skipButton.posX - 4,
+        posY = skipButton.posY - 4,
+        width = skipButton.width + 8,
+        height = skipButton.height + 8,
+        visual = ColorVisual(255, 255, 0),
+    ).apply { isVisible = false }
+
+    private val slotHighlights = allPlayerSlots.map { playerSlots ->
+        playerSlots.map { slot ->
+            Label(
+                posX = slot.posX - 4,
+                posY = slot.posY - 4,
+                width = slot.width + 8,
+                height = slot.height + 8,
+                visual = ColorVisual(255, 255, 0)
+            ).apply {
+                isVisible = false
+            }
+        }
+    }
+
     // Group player names and logs for easier access
     private val nameLabels = listOf(
         playerOneNameLabel,
@@ -605,55 +644,67 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     private val scoresScene = ScoresScene()
 
     /**
-     * Initializes the scene by setting the background color and adding the label.
+     * Initializes the scene by adding components.
      */
     init {
-        addComponents(deckStack)
-        addComponents(discardStack)
-        addComponents(playerHand)
-        addComponents(skipButton)
+        // add highlights
+        addComponents(deckHighlight, discardHighlight, skipButtonHighlight)
+        slotHighlights.flatten().forEach { addComponents(it) }
 
-        addComponents(playerOneNameLabel)
-        addComponents(playerOneLogLabel)
-        addComponents(playerOneSlotZero)
-        addComponents(playerOneSlotOne)
-        addComponents(playerOneSlotTwo)
-        addComponents(playerOneSlotThree)
-        addComponents(playerOneSlotFour)
-        addComponents(playerOneSlotFive)
+        // add game interaction content
+        addComponents(deckStack, discardStack, playerHand, skipButton)
 
-        addComponents(playerTwoLogLabel)
-        addComponents(playerTwoNameLabel)
-        addComponents(playerTwoSlotZero)
-        addComponents(playerTwoSlotOne)
-        addComponents(playerTwoSlotTwo)
-        addComponents(playerTwoSlotThree)
-        addComponents(playerTwoSlotFour)
-        addComponents(playerTwoSlotFive)
+        // add player one
+        addComponents(
+            playerOneNameLabel,
+            playerOneLogLabel,
+            playerOneSlotZero,
+            playerOneSlotOne,
+            playerOneSlotTwo,
+            playerOneSlotThree,
+            playerOneSlotFour,
+            playerOneSlotFive
+        )
 
-        addComponents(playerThreeLogLabel)
-        addComponents(playerThreeNameLabel)
-        addComponents(playerThreeSlotZero)
-        addComponents(playerThreeSlotOne)
-        addComponents(playerThreeSlotTwo)
-        addComponents(playerThreeSlotThree)
-        addComponents(playerThreeSlotFour)
-        addComponents(playerThreeSlotFive)
+        // add player two
+        addComponents(
+            playerTwoLogLabel,
+            playerTwoNameLabel,
+            playerTwoSlotZero,
+            playerTwoSlotOne,
+            playerTwoSlotTwo,
+            playerTwoSlotThree,
+            playerTwoSlotFour,
+            playerTwoSlotFive
+        )
 
-        addComponents(playerFourLogLabel)
-        addComponents(playerFourNameLabel)
-        addComponents(playerFourSlotZero)
-        addComponents(playerFourSlotOne)
-        addComponents(playerFourSlotTwo)
-        addComponents(playerFourSlotThree)
-        addComponents(playerFourSlotFour)
-        addComponents(playerFourSlotFive)
+        // add player three
+        addComponents(
+            playerThreeLogLabel,
+            playerThreeNameLabel,
+            playerThreeSlotZero,
+            playerThreeSlotOne,
+            playerThreeSlotTwo,
+            playerThreeSlotThree,
+            playerThreeSlotFour,
+            playerThreeSlotFive
+        )
 
-        addComponents(scoreboardBackground)
-        addComponents(scoreboardLabel)
+        // add player four
+        addComponents(
+            playerFourLogLabel,
+            playerFourNameLabel,
+            playerFourSlotZero,
+            playerFourSlotOne,
+            playerFourSlotTwo,
+            playerFourSlotThree,
+            playerFourSlotFour,
+            playerFourSlotFive
+        )
+
+        // add scoreboard
+        addComponents(scoreboardBackground, scoreboardLabel, scoreboardNewGameButton, scoreboardExitButton)
         addComponents(scoreLabels)
-        addComponents(scoreboardNewGameButton)
-        addComponents(scoreboardExitButton)
     }
 
     /** Refreshes the deck,discard pile, player card slots, card slot when the game has started. */
@@ -714,6 +765,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
             nameLabels[index].text = player.name
         }
 
+        updatePlayerVisibility()
         highlightName()
         updateInteractionState()
     }
@@ -790,6 +842,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
         slots.forEach { slotIndex ->
             allPlayerSlots[playerIndex][slotIndex].clear()
+            allPlayerSlots[playerIndex][slotIndex].isVisible = false
         }
     }
 
@@ -845,7 +898,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
                 }
             }
         }
+        showScoreboard()
+    }
 
+    /** Shows scoreboard and deactivates game content */
+    private fun showScoreboard() {
         val sortedPlayers = scoresScene.getSortedPlayers(game.players)
 
         sortedPlayers.forEachIndexed { i, player ->
@@ -857,17 +914,62 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         scoreboardLabel.isVisible = true
         scoreboardNewGameButton.isVisible = true
         scoreboardExitButton.isVisible = true
-    }
 
+        discardStack.isDisabled = true
+        deckStack.isDisabled = true
+        skipButton.isDisabled = true
+
+        // deactivate all highlights
+        slotHighlights.flatten().forEach { it.isVisible = false }
+    }
     /** Updates when [deckStack], [discardStack] and [skipButton] are clickable */
     private fun updateInteractionState() {
         val roundZero = game.round == 0
         val hasHand = game.hand != null
 
-        deckStack.isDisabled = hasHand || roundZero || deckStack.isEmpty()  || !firstFlip
-        discardStack.isDisabled = drewFromDiscard || roundZero || discardStack.isEmpty() || !firstFlip || placedOnDiscard
+        // Enable and disable stacks
+        deckStack.isDisabled = hasHand || roundZero || deckStack.isEmpty() || !firstFlip
+        discardStack.isDisabled =
+            drewFromDiscard || roundZero || discardStack.isEmpty() || !firstFlip || placedOnDiscard
 
         skipButton.isDisabled = hasHand || roundZero || firstFlip
+
+        // Highlight stacks
+        deckHighlight.isVisible = !deckStack.isDisabled
+        discardHighlight.isVisible = !discardStack.isDisabled
+        skipButtonHighlight.isVisible = !skipButton.isDisabled
+
+        // Highlight Slots
+        allPlayerSlots.forEachIndexed { playerIndex, slots ->
+
+            if (playerIndex >= game.players.size) {
+                slots.forEachIndexed { slotIndex, _ ->
+                    slotHighlights[playerIndex][slotIndex].isVisible = false
+                }
+                return@forEachIndexed
+            }
+
+            slots.forEachIndexed { slotIndex, _ ->
+                val card = game.players[playerIndex].slots[slotIndex]
+                val clickable = playerIndex == game.currentPlayer && card != null && (game.hand != null || card.faceDown)
+
+                slotHighlights[playerIndex][slotIndex].isVisible = clickable
+            }
+        }
+    }
+
+    /** Updates the visibility of the player slots */
+    private fun updatePlayerVisibility() {
+        val playerCount = game.players.size
+
+        allPlayerSlots.forEachIndexed { index, slots ->
+            val visible = index < playerCount
+
+            slots.forEach { it.isVisible = visible }
+            slotHighlights[index].forEach { it.isVisible = false }
+            nameLabels[index].isVisible = visible
+            logLabels[index].isVisible = visible
+        }
     }
 
     /** Handles the click on a players card slot */

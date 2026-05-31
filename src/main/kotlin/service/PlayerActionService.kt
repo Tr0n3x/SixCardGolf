@@ -258,8 +258,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             throw IllegalStateException("This move is not allowed.")
         }
 
-        val player = game.players[game.currentPlayer]
-
         // draw from discard
         if (discard) {
             if (game.discard.isNotEmpty()) {
@@ -268,7 +266,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 game.hand = card
                 onAllRefreshables { refreshAfterHandChange() }
                 game.currentAction = Action.DRAW_DISCARD
-                player.lastAction += "Drew ${game.hand} from discard. "
             }
             // draw from deck
         } else {
@@ -279,7 +276,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 game.hand?.flip()
                 onAllRefreshables { refreshAfterHandChange() }
                 game.currentAction = Action.DRAW_DECK
-                player.lastAction += "Drew ${game.hand} from deck. "
             }
         }
     }
@@ -313,7 +309,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             onAllRefreshables { refreshAfterDiscardPlace() }
             game.hand = null
             onAllRefreshables { refreshAfterHandChange() }
-            player.lastAction += "Discarded drawn card $card. "
+            player.lastAction = "Discarded drawn card $card. "
             game.currentAction = Action.FLIP
             flippedThisTurn = 1
 
@@ -338,7 +334,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         game.hand = null
         onAllRefreshables { refreshAfterHandChange() }
-        player.lastAction += "Replaced $oldCard with $newCard. "
+        player.lastAction = "Replaced $oldCard with drawn card $newCard. "
 
         removeRow(player, 0)
         removeRow(player, 1)
