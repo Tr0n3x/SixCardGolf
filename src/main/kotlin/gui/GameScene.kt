@@ -31,6 +31,10 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     private val game get() = rootService.currentGame ?: throw IllegalStateException("Game not initialized")
     private val player get() = game.players[game.currentPlayer]
 
+    private var drewFromDiscard = false
+    private var placedOnDiscard = false
+    private var firstFlip = true
+
     // Draw deck
     private val deckStack: CardStack<CardView> = CardStack<CardView>(
         posX = (1920 / 2) - 140, // Center: (1920/2)-65 --> BoardGameScene width / 2 - width / 2
@@ -711,6 +715,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         }
 
         highlightName()
+        updateInteractionState()
     }
 
     /** Refreshes the log when a players turn has ended. */
@@ -718,8 +723,11 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         game.players.forEachIndexed { index, player ->
             logLabels[index].text = player.lastAction
         }
-
         highlightName()
+        drewFromDiscard = false
+        placedOnDiscard = false
+        firstFlip = true
+        updateInteractionState()
     }
 
     /** Refreshes the hand when a card has been placed in or removed from the hand slot */
@@ -735,6 +743,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
         showCard(card, cardView)
         playerHand.add(cardView)
+        updateInteractionState()
     }
 
     /** Refreshes the discard pile when a card has been taken from discard pile. */
@@ -746,6 +755,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
             showCard(card, cardView)
             discardStack.add(cardView)
         }
+        drewFromDiscard = true
+        updateInteractionState()
     }
 
     /** Refreshes the discard pile when a card has been taken from discard pile. */
@@ -761,6 +772,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
         discardStack.clear()
         discardStack.add(cardView)
+        placedOnDiscard = true
+        updateInteractionState()
     }
 
     /** Refreshes the deck when a card from deck has been taken. */
@@ -768,6 +781,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         if (game.deck.isEmpty()) {
             deckStack.clear()
         }
+        updateInteractionState()
     }
 
     /** Refreshes the slots of a certain row when it has been removed. */
@@ -810,6 +824,9 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
 
         val cardView = cardMap.forward(card)
         showCard(card, cardView)
+
+        firstFlip = false
+        updateInteractionState()
     }
 
     /** Refreshes the scoreboard after the game has ended. */
@@ -840,6 +857,17 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         scoreboardLabel.isVisible = true
         scoreboardNewGameButton.isVisible = true
         scoreboardExitButton.isVisible = true
+    }
+
+    /** Updates when [deckStack], [discardStack] and [skipButton] are clickable */
+    private fun updateInteractionState() {
+        val roundZero = game.round == 0
+        val hasHand = game.hand != null
+
+        deckStack.isDisabled = hasHand || roundZero || deckStack.isEmpty()  || !firstFlip
+        discardStack.isDisabled = drewFromDiscard || roundZero || discardStack.isEmpty() || !firstFlip || placedOnDiscard
+
+        skipButton.isDisabled = hasHand || roundZero || firstFlip
     }
 
     /** Handles the click on a players card slot */

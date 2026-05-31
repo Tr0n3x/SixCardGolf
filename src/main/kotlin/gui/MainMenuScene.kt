@@ -152,15 +152,11 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
                 playerFourTextField.text.trim()
             ).filter { it.isNotBlank() }
 
-            if (playerList.size >= 2) {
-                rootService.gameService.startGame(
-                    playerNames = playerList,
-                    randomOrder = shuffleCheckBox.isChecked,
-                    testMode = testModeCheckBox.isChecked
-                )
-            } else {
-                println("At least two player are needed to start the game.")
-            }
+            rootService.gameService.startGame(
+                playerNames = playerList,
+                randomOrder = shuffleCheckBox.isChecked,
+                testMode = testModeCheckBox.isChecked
+            )
         }
     }
 
@@ -177,7 +173,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         addComponents(exitButton)
         addComponents(startButton)
 
-        // Listener to check if enough player names have been added
+        // Listener to check if enough player names have been added, if they are unique and updates the start Button
         listOf(
             playerOneTextField,
             playerTwoTextField,
@@ -187,8 +183,24 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
             it.onKeyReleased = {
                 updateEnoughPlayersLabel()
                 updateUniquePlayersLabel()
+                updateStartButton()
             }
         }
+    }
+
+    /** Deactivates and activates the start button when requirements are met. */
+    private fun updateStartButton() {
+        val playerList = listOf(
+            playerOneTextField.text.trim(),
+            playerTwoTextField.text.trim(),
+            playerThreeTextField.text.trim(),
+            playerFourTextField.text.trim()
+        ).filter { it.isNotBlank() }
+
+        val enoughPlayers = playerList.size >= 2
+        val uniqueNames = playerList.size == playerList.toSet().size
+
+        startButton.isDisabled = !(enoughPlayers && uniqueNames)
     }
 
     /** Replaces the text of `enoughPlayersLabel` label when enough player names are entered */
@@ -229,5 +241,3 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         }
     }
 }
-
-

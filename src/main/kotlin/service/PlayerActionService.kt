@@ -195,12 +195,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         if (flippedThisTurn == 2) {
             flippedThisTurn = 0
-            rootService.gameService.nextPlayer()
 
-            if (game.currentPlayer == 0) {
+            if (game.currentPlayer == game.players.size - 1) {
                 game.round = 1
                 game.players[0].lastAction = ""
             }
+            rootService.gameService.nextPlayer()
         }
     }
 
