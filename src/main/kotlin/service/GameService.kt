@@ -31,7 +31,6 @@ class GameService(private val rootService: RootService) : AbstractRefreshingServ
             throw IllegalStateException("Game already started.")
         }
 
-
         require(playerNames.all { it.isNotBlank() }) { "Player names must not be empty." }
         require(playerNames.size == playerNames.toSet().size) { "Player names must be unique." }
 

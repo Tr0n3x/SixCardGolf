@@ -14,7 +14,7 @@ import tools.aqua.bgw.visual.ColorVisual
 import kotlin.system.exitProcess
 
 /** The scene for the main menu of the game */
-class MainMenuScene(private val rootService: RootService) : MenuScene(
+class MainMenuScene(private val rootService: RootService, private val application: SixCardGolfGameApplication) : MenuScene(
     width = 1920 / 3,
     height = 1080 * 0.67,
     background = ColorVisual(255, 255, 255)
@@ -119,6 +119,21 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         allowIndeterminate = false
     )
 
+    /** Opens the options menu. */
+    private val optionsButton = Button(
+        posX = 50,
+        posY = 480,
+        width = 130,
+        height = 50,
+        text = "Options",
+        font = Font(20, Color.DARK_GRAY, "JetBrains Mono ExtraBold"),
+        visual = ColorVisual(200,200,200)
+    ).apply {
+        onMouseClicked = {
+            application.showOptionsMenu()
+        }
+    }
+
     /** Quits the game. */
     private val exitButton = Button(
         posX = 50,
@@ -133,6 +148,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
             exitProcess(0)
         }
     }
+
 
     /** Starts the game. */
     private val startButton = Button(
@@ -172,6 +188,7 @@ class MainMenuScene(private val rootService: RootService) : MenuScene(
         addComponents(testModeCheckBox)
         addComponents(exitButton)
         addComponents(startButton)
+        addComponents(optionsButton)
 
         // Listener to check if enough player names have been added, if they are unique and updates the start Button
         listOf(

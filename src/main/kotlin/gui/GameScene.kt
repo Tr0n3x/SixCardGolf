@@ -21,11 +21,12 @@ import kotlin.system.exitProcess
  *
  * @property rootService Implements the [RootService].
  */
-class GameScene(private val rootService: RootService) : BoardGameScene(
-    width = 1920,
-    height = 1080,
-    background = ColorVisual(108, 168, 59)
-),
+class GameScene(private val rootService: RootService, private val application: SixCardGolfGameApplication) :
+    BoardGameScene(
+        width = 1920,
+        height = 1080,
+        background = ColorVisual(108, 168, 59)
+    ),
     Refreshable {
 
     private val game get() = rootService.currentGame ?: throw IllegalStateException("Game not initialized")
@@ -34,6 +35,21 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     private var drewFromDiscard = false
     private var placedOnDiscard = false
     private var firstFlip = true
+
+    // Options Menu
+    private val optionsButton = Button(
+        posX = (1920 / 2) - 65,
+        posY = 20,
+        width = 130,
+        height = 50,
+        text = "Options",
+        font = Font(20, Color.DARK_GRAY, "JetBrains Mono ExtraBold"),
+        visual = ColorVisual(200,200,200)
+    ).apply {
+        onMouseClicked = {
+            application.showOptionsMenu()
+        }
+    }
 
     // Draw deck
     private val deckStack: CardStack<CardView> = CardStack<CardView>(
@@ -526,7 +542,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     ).apply {
         isVisible = false
         onMouseClicked = {
-            rootService.gameService.onAllRefreshables { refreshAfterReturnToMenu() }
+            rootService.currentGame = null
+            application.showMainMenu()
         }
     }
 
@@ -638,8 +655,8 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
     // Map cards in a BidirectionalMap
     private val cardMap: BidirectionalMap<Card, CardView> = BidirectionalMap()
 
-    // Card Image Loader for each refresh method
-    private val cardImageLoader = CardImageLoader()
+    // Card Image Loader for refresh methods and cardDesigns
+    private val cardImageLoader get() = CardImageLoader(rootService.cardDesign)
 
     private val scoresScene = ScoresScene()
 
@@ -705,6 +722,19 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         // add scoreboard
         addComponents(scoreboardBackground, scoreboardLabel, scoreboardNewGameButton, scoreboardExitButton)
         addComponents(scoreLabels)
+
+        // add options button
+        addComponents(optionsButton)
+    }
+
+    /** Refreshes the card design. */
+    override fun refreshAfterCardDesignChange() {
+        val cardLoader = CardImageLoader(rootService.cardDesign)
+
+        cardMap.entries.forEach { (card, view) ->
+            view.frontVisual = cardLoader.frontImageFor(card.suit, card.value)
+            view.backVisual = cardLoader.backImage
+        }
     }
 
     /** Refreshes the deck,discard pile, player card slots, card slot when the game has started. */
@@ -922,6 +952,7 @@ class GameScene(private val rootService: RootService) : BoardGameScene(
         // deactivate all highlights
         slotHighlights.flatten().forEach { it.isVisible = false }
     }
+
     /** Updates when [deckStack], [discardStack] and [skipButton] are clickable */
     private fun updateInteractionState() {
         val roundZero = game.round == 0

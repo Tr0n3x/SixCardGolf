@@ -10,8 +10,6 @@ import tools.aqua.bgw.visual.ImageVisual
  * as the order in which the suits are declared in [CardSuit], mappings via [row] and [column]
  * are required.
  */
-private const val CARDS_FILE = "card_deck.png"
-
 private const val IMG_HEIGHT = 200
 private const val IMG_WIDTH = 130
 
@@ -20,7 +18,7 @@ private const val IMG_WIDTH = 130
  * in a raster. The returned [ImageVisual] objects of [frontImageFor], [blankImage],
  * and [backImage] are 130x200 pixels.
  */
-class CardImageLoader {
+class CardImageLoader(private val cardDesign: CardDesign) {
 
     /**
      * Provides a blank (white) card
@@ -39,7 +37,7 @@ class CardImageLoader {
         getImageByCoordinates(value.column, suit.row)
 
     /**
-     * retrieves from the full raster image [CARDS_FILE] the corresponding sub-image
+     * retrieves from the full raster image [cardDesign] the corresponding sub-image
      * for the given column [x] and row [y]
      *
      * @param x column in the raster image, starting at 0
@@ -47,7 +45,7 @@ class CardImageLoader {
      *
      */
     private fun getImageByCoordinates (x: Int, y: Int) = ImageVisual(
-        CARDS_FILE,
+        cardDesign.file,
         IMG_WIDTH,
         IMG_HEIGHT,
         x * IMG_WIDTH,
@@ -57,7 +55,7 @@ class CardImageLoader {
 }
 
 /**
- * As the [CARDS_FILE] does not have the same ordering of suits
+ * As the [service.RootService.cardDesign] does not have the same ordering of suits
  * as they are in [CardSuit], this extension property provides
  * a corresponding mapping to be used when addressing the row.
  */
@@ -69,7 +67,7 @@ private val CardSuit.row get() = when (this) {
 }
 
 /**
- * As the [CARDS_FILE] does not have the same ordering of values
+ * As the [service.RootService.cardDesign] does not have the same ordering of values
  * as they are in [CardValue], this extension property provides
  * a corresponding mapping to be used when addressing the column.
  */

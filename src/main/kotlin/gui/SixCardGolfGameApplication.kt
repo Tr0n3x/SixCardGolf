@@ -19,9 +19,10 @@ class SixCardGolfGameApplication : BoardGameApplication(
     /**
      * The main game scene displayed in the application.
      */
-    private val gameScene = GameScene(rootService)
-    private val mainMenuScene = MainMenuScene(rootService)
+    private val gameScene = GameScene(rootService, this)
+    private val mainMenuScene = MainMenuScene(rootService, this)
     private val scoresScene = ScoresScene()
+    private val optionsMenuScene = OptionsMenuScene(rootService, this)
 
     /**
      * Initializes the application by displaying the [GameScene].
@@ -35,6 +36,7 @@ class SixCardGolfGameApplication : BoardGameApplication(
             gameScene,
             mainMenuScene,
             scoresScene,
+            optionsMenuScene,
         )
     }
 
@@ -46,12 +48,19 @@ class SixCardGolfGameApplication : BoardGameApplication(
         this.hideMenuScene()
     }
 
-    /**
-     * Refresh after the game ended and player want to return to main menu.
-     * Shows mainMenu and sets currentGame back to null.
-     */
-    override fun refreshAfterReturnToMenu() {
-        showMenuScene(mainMenuScene)
-        rootService.currentGame = null
+    /** Shows the MainMenuScene. */
+    fun showMainMenu() {
+        this.showMenuScene(mainMenuScene)
+    }
+
+    /** Shows the OptionMenuScene. */
+    fun showOptionsMenu() {
+        optionsMenuScene.updateReturnButton()
+        this.showMenuScene(optionsMenuScene)
+    }
+
+    /** Hides the OptionMenuScene. */
+    fun hideOptionsMenu() {
+        this.hideMenuScene()
     }
 }

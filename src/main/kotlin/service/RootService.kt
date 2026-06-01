@@ -1,15 +1,20 @@
 package service
 
 import entity.SixCardGolfGame
+import gui.CardDesign
 
 /**
  * The root service class is responsible for managing services and the entity layer reference.
  * This class acts as a central hub for every other service within the application.
  */
 class RootService {
+
+    /** Sets the initial card design */
+    var cardDesign: CardDesign = CardDesign.CLASSIC
+
     /** The connected [GameService] for this rootService */
     val gameService = GameService(this)
-    
+
     /** The connected [PlayerActionService] for this rootService */
     val playerActionService = PlayerActionService(this)
 
