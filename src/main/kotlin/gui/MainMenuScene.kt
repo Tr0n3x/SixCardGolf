@@ -13,12 +13,18 @@ import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 import kotlin.system.exitProcess
 
-/** The scene for the main menu of the game */
-class MainMenuScene(private val rootService: RootService, private val application: SixCardGolfGameApplication) : MenuScene(
-    width = 1920 / 3,
-    height = 1080 * 0.67,
-    background = ColorVisual(255, 255, 255)
-),
+/**
+ * Represents the main menu scene with all needed components.
+ *
+ * @property rootService Implements the [RootService].
+ * @property application Implements [SixCardGolfGameApplication].
+ */
+class MainMenuScene(private val rootService: RootService, private val application: SixCardGolfGameApplication) :
+    MenuScene(
+        width = 1920 / 3,
+        height = 1080 * 0.67,
+        background = ColorVisual(255, 255, 255)
+    ),
     Refreshable {
 
     // Title of main menu scene
@@ -127,7 +133,7 @@ class MainMenuScene(private val rootService: RootService, private val applicatio
         height = 50,
         text = "Options",
         font = Font(20, Color.DARK_GRAY, "JetBrains Mono ExtraBold"),
-        visual = ColorVisual(200,200,200)
+        visual = ColorVisual(200, 200, 200)
     ).apply {
         onMouseClicked = {
             application.showOptionsMenu()
@@ -218,7 +224,7 @@ class MainMenuScene(private val rootService: RootService, private val applicatio
         val uniqueNames = playerList.size == playerList.toSet().size
 
         startButton.isDisabled = !(enoughPlayers && uniqueNames)
-        if(startButton.isDisabled) {
+        if (startButton.isDisabled) {
             startButton.visual = ColorVisual(Color(128, 128, 128))
         } else {
             startButton.visual = ColorVisual(Color(136, 221, 136))

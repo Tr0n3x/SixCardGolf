@@ -12,6 +12,12 @@ import tools.aqua.bgw.core.MenuScene
 import tools.aqua.bgw.util.Font
 import tools.aqua.bgw.visual.ColorVisual
 
+/**
+ * Represents the options menu scene with all needed components.
+ *
+ * @property rootService Implements the [RootService].
+ * @property application Implements [SixCardGolfGameApplication].
+ */
 class OptionsMenuScene(private val rootService: RootService, private val application: SixCardGolfGameApplication) :
     MenuScene(
         width = 1920 / 3,
@@ -150,6 +156,8 @@ class OptionsMenuScene(private val rootService: RootService, private val applica
 
         updateCardPreview()
     }
+
+    /** Activates the Return to game button if a game is currently going on. Otherwise, deactivates it. */
     fun updateReturnButton() {
         returnToGameButton.isDisabled = rootService.currentGame == null
 
@@ -160,6 +168,7 @@ class OptionsMenuScene(private val rootService: RootService, private val applica
                 ColorVisual(Color(136,221,136))
     }
 
+    /** Updates the cardPreview when used [CardDesign.next] or [CardDesign.previous]. */
     private fun updateCardPreview() {
         val cardLoader = CardImageLoader(rootService.cardDesign)
 

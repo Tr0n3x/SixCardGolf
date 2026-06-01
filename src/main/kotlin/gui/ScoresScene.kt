@@ -7,6 +7,7 @@ import tools.aqua.bgw.visual.ColorVisual
 
 /**
  * Class for scoreboard.
+ *
  * Even though the actual scoreboard is built in [GameScene], so that the background is still visible.
  */
 class ScoresScene: MenuScene(
