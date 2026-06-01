@@ -9,6 +9,9 @@ import gui.CardDesign
  */
 class RootService {
 
+    /** The connected [SoundService] for this rootService. */
+    var soundService: SoundService = SoundService()
+
     /** Sets the initial card design */
     var cardDesign: CardDesign = CardDesign.CLASSIC
 

@@ -30,6 +30,7 @@ class SixCardGolfGameApplication : BoardGameApplication(
     init {
         showGameScene(gameScene)
         showMenuScene(mainMenuScene)
+        rootService.soundService.playBackgroundMusic()
 
         rootService.addRefreshables(
             this,

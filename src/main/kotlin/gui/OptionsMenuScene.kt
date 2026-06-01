@@ -5,6 +5,7 @@ import entity.CardValue
 import service.Refreshable
 import service.RootService
 import tools.aqua.bgw.components.uicomponents.Button
+import tools.aqua.bgw.components.uicomponents.CheckBox
 import tools.aqua.bgw.components.uicomponents.Label
 import tools.aqua.bgw.core.Alignment
 import tools.aqua.bgw.core.Color
@@ -128,32 +129,53 @@ class OptionsMenuScene(private val rootService: RootService, private val applica
     private val previewCardFront = Label(
         posX = 270,
         posY = 180,
-        width = 130/3,
-        height = 200/3,
+        width = 130 / 3,
+        height = 200 / 3,
     )
 
     private val previewCardBack = Label(
         posX = 325,
         posY = 180,
-        width = 130/3,
-        height = 200/3,
+        width = 130 / 3,
+        height = 200 / 3,
+    )
+
+    private val musicCheckbox = CheckBox(
+        posX = 50,
+        posY = 380,
+        width = 175,
+        height = 50,
+        text = "Music",
+        alignment = Alignment.CENTER_LEFT,
+        font = Font(20.0, Color.DARK_GRAY, "JetBrains Mono ExtraBold"),
+        allowIndeterminate = false,
+        isChecked = true
     )
 
     init {
         addComponents(mainMenuButton, returnToGameButton, warningLabel)
         addComponents(designTitleLabel, leftButton, rightButton, designLabel)
         addComponents(previewCardFront, previewCardBack)
+        addComponents(musicCheckbox)
 
         // Listener for mainMenuButton
-        if (rootService.currentGame != null) {
-            mainMenuButton.onMouseEntered = {
+        mainMenuButton.onMouseEntered = {
+            if (rootService.currentGame != null) {
                 warningLabel.isVisible = true
-            }
-            mainMenuButton.onMouseExited = {
-                warningLabel.isVisible = false
             }
         }
 
+        mainMenuButton.onMouseExited = {
+            warningLabel.isVisible = false
+        }
+
+        musicCheckbox.onCheckedChanged = {
+            if (it) {
+                rootService.soundService.playBackgroundMusic()
+            } else {
+                rootService.soundService.stopBackgroundMusic()
+            }
+        }
         updateCardPreview()
     }
 
@@ -163,9 +185,9 @@ class OptionsMenuScene(private val rootService: RootService, private val applica
 
         returnToGameButton.visual =
             if (returnToGameButton.isDisabled)
-                ColorVisual(Color(128,128,128))
+                ColorVisual(Color(128, 128, 128))
             else
-                ColorVisual(Color(136,221,136))
+                ColorVisual(Color(136, 221, 136))
     }
 
     /** Updates the cardPreview when used [CardDesign.next] or [CardDesign.previous]. */
