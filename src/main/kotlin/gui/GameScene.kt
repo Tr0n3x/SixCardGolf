@@ -796,16 +796,7 @@ class GameScene(private val rootService: RootService, private val application: S
         }
 
         updatePlayerVisibility()
-
-        // highlight names
-        nameLabels.forEachIndexed { index, label ->
-            if (index == game.currentPlayer) {
-                label.font = Font(size = 30, color = Color.YELLOW)
-            } else {
-                label.font = Font(size = 30, color = Color.BLACK)      // normal / transparent
-            }
-        }
-
+        highlightName()
         updateInteractionState()
     }
 
@@ -814,16 +805,7 @@ class GameScene(private val rootService: RootService, private val application: S
         game.players.forEachIndexed { index, player ->
             logLabels[index].text = player.lastAction
         }
-
-        // highlight names
-        nameLabels.forEachIndexed { index, label ->
-            if (index == game.currentPlayer) {
-                label.font = Font(size = 30, color = Color.YELLOW)
-            } else {
-                label.font = Font(size = 30, color = Color.BLACK)      // normal / transparent
-            }
-        }
-
+        highlightName()
         drewFromDiscard = false
         placedOnDiscard = false
         firstFlip = true
@@ -1042,6 +1024,17 @@ class GameScene(private val rootService: RootService, private val application: S
             cardView.showBack()
         } else {
             cardView.showFront()
+        }
+    }
+
+    /** Highlights [entity.SixCardGolfGame.currentPlayer] name */
+    private fun highlightName() {
+        nameLabels.forEachIndexed { index, label ->
+            if (index == game.currentPlayer) {
+                label.font = Font(size = 30, color = Color.YELLOW)
+            } else {
+                label.font = Font(size = 30, color = Color.BLACK)      // normal / transparent
+            }
         }
     }
 
