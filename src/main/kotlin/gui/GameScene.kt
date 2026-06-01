@@ -3,6 +3,7 @@ package gui
 import entity.Card
 import service.Refreshable
 import service.RootService
+import tools.aqua.bgw.animation.ScaleAnimation
 import tools.aqua.bgw.components.container.CardStack
 import tools.aqua.bgw.components.gamecomponentviews.CardView
 import tools.aqua.bgw.components.uicomponents.Button
@@ -910,6 +911,7 @@ class GameScene(private val rootService: RootService, private val application: S
 
         firstFlip = false
         updateInteractionState()
+        flipCardAnimation(cardView)
     }
 
     /** Refreshes the scoreboard after the game has ended. */
@@ -929,6 +931,30 @@ class GameScene(private val rootService: RootService, private val application: S
             }
         }
         showScoreboard()
+    }
+
+    /** Adds an animation when flipping a card. */
+    private fun flipCardAnimation(cardView: CardView) {
+        val flipFirstHalf = ScaleAnimation(
+            duration = 250,
+            fromScaleX = -1.0,
+            toScaleX = 0.01,
+            componentView = cardView
+        )
+
+        val flipSecondHalf = ScaleAnimation(
+            duration = 250,
+            fromScaleX = 0.01,
+            toScaleX = 1.0,
+            componentView = cardView
+        )
+
+        flipFirstHalf.onFinished = {
+            cardView.showFront()
+            playAnimation(flipSecondHalf)
+        }
+        playAnimation(flipFirstHalf)
+        cardView.scaleX *= -1
     }
 
     /** Shows scoreboard and deactivates game content */
