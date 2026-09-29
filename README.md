@@ -2,11 +2,11 @@
 Implementation of the card game Six Card Golf as part of a university software engineering project at TU Dortmund.
 
 ## About the project
-Six Card Golf is a card game in which players trz to achieve the lowest possible score by strategically exchanging and revealing cards.
+Six Card Golf is a card game in which players try to achieve the lowest possible score by strategically exchanging and revealing cards.
 The project was developed as part of the Softwarepraktikum at TU Dortmund.
 
 ## My Contribution
-The complete implementation of the game was developed independently bz me.
+The complete implementation of the game was developed independently by me.
 
 My work included:
 * Implementation of the game logic
