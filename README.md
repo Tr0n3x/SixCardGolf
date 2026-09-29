@@ -1,8 +1,21 @@
-# SoPra Projekt 1 (Einzelprojekt)
+# Six Card Golf
+Implementation of the card game Six Card Golf as part of a university software engineering project at TU Dortmund.
 
-## Wichtige Links
+## About the project
+Six Card Golf is a card game in which players try to achieve the lowest possible score by strategically exchanging and revealing cards.
+The project was developed as part of the Softwarepraktikum at TU Dortmund.
 
-* Aktuelle Informationen zu diesem SoPra: https://sopra.cs.tu-dortmund.de/wiki/sopra/26B/start
-* Beispielprojekt Kartenspiel War: https://sopra-gitlab.cs.tu-dortmund.de/internal/bgw-war
-* Beispielprojekt Mau-Mau: https://sopra-gitlab.cs.tu-dortmund.de/internal/bgw-maumau
-* Weitere Links: https://sopra.cs.tu-dortmund.de/wiki/infos/links/
+## My Contribution
+The complete implementation of the game was developed independently by me.
+
+My work included:
+* Implementation of the game logic
+* Implementation of the card and player mechanics
+* Developent of the graphical user interface using BoardGameWork (BGW)
+* Handling of game states and player actions
+* Testing and debugging
+
+## Technologies
+* Kotlin
+* BoardGameWork (BGW)
+* Git / GitLab
