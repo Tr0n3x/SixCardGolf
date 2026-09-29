@@ -82,8 +82,18 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val indices = if (row == 0) intArrayOf(0, 2, 4) else intArrayOf(1, 3, 5)
 
         if (allCardsNotNull(cards) && allCardsFlipped(cards) && sameValueCards(cards)) {
-            indices.forEach { player.slots[it] = null }
+            indices.forEach {
+                player.slots[it]?.let { card ->
+                    game.discard.add(card)
+                    println("Card in hand: " + player.slots[it])
+                    println("Discarded card: $card")
+                    player.slots[it] = null
+                    println("Discard Last: " + game.discard.last())
+                    println("Discard First: " + game.discard.first())
+                }
+            }
             onAllRefreshables { refreshAfterRowRemove(indices) }
+            onAllRefreshables { refreshAfterDiscardPlace() }
         }
 
     }
@@ -116,6 +126,15 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         cards.all { it != null }
 
     /**
+     * Checks whether a list of cards is null.
+     *
+     * @param cards List of cards which shall be checked if cards are present.
+     * @return true if all cards are null, otherwise false.
+     */
+    private fun allCardsNull(cards: List<Card?>): Boolean =
+        cards.all { it == null }
+
+    /**
      * Checks whether two specific slots have the same value title.
      *
      * @param player The player whose slots should be checked.
@@ -131,8 +150,15 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     private fun calculateScore() {
         for (player in game.players) {
             var cardSlot = 0
+            val cardsRow = listOf(
+                player.slots[0], player.slots[2], player.slots[4],
+                player.slots[1], player.slots[3], player.slots[5]
+            )
+
             while (cardSlot < player.slots.size) {
-                if (!boolSlotsEqual(player, cardSlot, cardSlot + 1)) {
+                if (allCardsNull(cardsRow)) {
+                    player.score = -999
+                } else if (!boolSlotsEqual(player, cardSlot, cardSlot + 1)) {
                     player.score = player.score?.plus(player.slots[cardSlot]?.value?.value ?: 0)
                     player.score = player.score?.plus(player.slots[cardSlot + 1]?.value?.value ?: 0)
                 }

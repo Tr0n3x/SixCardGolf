@@ -45,7 +45,7 @@ class GameScene(private val rootService: RootService, private val application: S
         height = 50,
         text = "Options",
         font = Font(20, Color.DARK_GRAY, "JetBrains Mono ExtraBold"),
-        visual = ColorVisual(200,200,200)
+        visual = ColorVisual(200, 200, 200)
     ).apply {
         onMouseClicked = {
             application.showOptionsMenu()
@@ -493,6 +493,16 @@ class GameScene(private val rootService: RootService, private val application: S
         isVisible = false
     }
 
+    private val lastRoundLabel = Label(
+        posX = (1920 / 2) - 100, // Center: (1920/2)-65 --> BoardGameScene width / 2 - width / 2
+        posY = (1080 / 2) - 150, // Center: (1080/2)-100 --> BoardGameScene height / 2 - height / 2
+        width = 200,
+        height = 50,
+        font = Font(size = 30, color = Color.RED),
+        text = "LAST ROUND",
+        alignment = Alignment.CENTER
+    ).apply { isVisible = false }
+
     private val scoreLabels = listOf(
         Label(
             posX = 760,
@@ -668,6 +678,7 @@ class GameScene(private val rootService: RootService, private val application: S
         // add highlights
         addComponents(deckHighlight, discardHighlight, skipButtonHighlight)
         slotHighlights.flatten().forEach { addComponents(it) }
+        addComponents(lastRoundLabel)
 
         // add game interaction content
         addComponents(deckStack, discardStack, playerHand, skipButton)
@@ -984,6 +995,9 @@ class GameScene(private val rootService: RootService, private val application: S
         val roundZero = game.round == 0
         val hasHand = game.hand != null
 
+        // Enable last round label
+        lastRoundLabel.isVisible = game.finalRound
+
         // Enable and disable stacks
         deckStack.isDisabled = hasHand || roundZero || deckStack.isEmpty() || !firstFlip
         discardStack.isDisabled =
@@ -1085,11 +1099,7 @@ class GameScene(private val rootService: RootService, private val application: S
 
             cardView.isDisabled = true
 
-            if (card.faceDown) {
-                cardView.showBack()
-            } else {
-                cardView.showFront()
-            }
+            showCard(card, cardView)
 
             stackView.add(cardView)
             cardMap.add(card to cardView)
