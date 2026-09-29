@@ -15,7 +15,7 @@ My work included:
 * Handling of game states and player actions
 * Testing and debugging
 
-# Technologies
+## Technologies
 * Kotlin
 * BoardGameWork (BGW)
 * Git / GitLab
